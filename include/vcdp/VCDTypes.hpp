@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "Config.hpp"
@@ -43,7 +45,10 @@ enum class VCDBit {
 using VCDBitVector = std::vector<VCDBit>;
 
 /// @brief Using to identify a real number as stored in a VCD.
-using VCDRead = double;
+using VCDReal = double;
+
+/// @brief Variant type for a signal's value: bit, vector, or real.
+using VCDValueVariant = std::variant<VCDBit, VCDBitVector, VCDReal>;
 
 /// @brief Describes how a signal value is represented in the VCD trace.
 enum class VCDValueType {
@@ -88,14 +93,15 @@ enum class VCDVarType {
 
 /// @brief Represents the possible time units a VCD file is specified in.
 enum class VCDTimeUnit {
-    TIME_S,   //!< Seconds
-    TIME_MS,  //!< Milliseconds
-    TIME_US,  //!< Microseconds
-    TIME_NS,  //!< Nanoseconds
-    TIME_PS,  //!< Picoseconds
+    TIME_UNKNOWN,  ///< Unknown
+    TIME_S,        ///< Seconds
+    TIME_MS,       ///< Milliseconds
+    TIME_US,       ///< Microseconds
+    TIME_NS,       ///< Nanoseconds
+    TIME_PS,       ///< Picoseconds
 };
 
-/// @brief Represents the type of SV construct who's scope we are in.
+/// @brief Represents the type of SV construct whose scope we are in.
 enum class VCDScopeType { VCD_SCOPE_BEGIN, VCD_SCOPE_FORK, VCD_SCOPE_FUNCTION, VCD_SCOPE_MODULE, VCD_SCOPE_TASK, VCD_SCOPE_ROOT };
 
 // Forward declaration of VCDScope to make it available to VCDSignal struct.
@@ -112,7 +118,7 @@ struct VCDSignal {
     int rindex;  // -1 if not [lindex:rindex]
 };
 
-/// @brief Represents a scope type, scope name pair and all of it's child signals.
+/// @brief Represents a scope type, scope name pair and all of its child signals.
 struct VCDScope {
     VCDScopeName name;                //!< The short name of the scope
     VCDScopeType type;                //!< Construct type

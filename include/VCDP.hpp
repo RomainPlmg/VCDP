@@ -1,3 +1,3 @@
 #pragma once
 
-#include "VCDTypes.hpp"
+#include "vcdp/VCDFile.hpp"
