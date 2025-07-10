@@ -5,6 +5,7 @@ set(test_sources
         commented_header.cpp
         oneline_header.cpp
         tabed_header.cpp
+        multiline_comment.cpp
         incomplete_header.cpp
 )
 

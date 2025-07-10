@@ -11,8 +11,8 @@ add_subdirectory(libs/pegtl)
 add_subdirectory(libs/doctest)
 
 file(GLOB_RECURSE SRC_FILES
-        include/*.hpp
-        include/*.cpp
+        src/*.hpp
+        src/*.cpp
 )
 
 option(BUILD_STATIC_LIB "Build as a static library instead of header-only" OFF)
@@ -20,6 +20,6 @@ option(BUILD_STATIC_LIB "Build as a static library instead of header-only" OFF)
 add_library(vcdp STATIC ${SRC_FILES})
 
 target_link_libraries(vcdp PUBLIC pegtl)
-target_include_directories(vcdp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(vcdp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 add_subdirectory(tests)

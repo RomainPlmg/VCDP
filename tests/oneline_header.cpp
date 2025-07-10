@@ -5,7 +5,6 @@
 
 TEST_CASE("Open one line VCD header file") {
     vcdp::VCDParser parser;
-    // parser.SetDebugMode(vcdp::VCDParser::DebugMode::Tracer);
     vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "oneline_header.vcd");
     REQUIRE(trace != nullptr);
 
@@ -13,5 +12,5 @@ TEST_CASE("Open one line VCD header file") {
     CHECK(trace->version == "GHDL v0");
     CHECK(trace->time_resolution == 1);
     CHECK(trace->time_units == vcdp::VCDTimeUnit::TIME_NS);
-    CHECK(!trace->comment.empty());
+    CHECK(trace->comment == "This is a test VCD file");
 }

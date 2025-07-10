@@ -58,15 +58,19 @@ struct skw_dumpvars : TAO_PEGTL_STRING("$dumpvars") {};
 
 struct time_unit : pegtl::sor<TAO_PEGTL_STRING("s"), TAO_PEGTL_STRING("ms"), TAO_PEGTL_STRING("us"), TAO_PEGTL_STRING("ns"), TAO_PEGTL_STRING("ps"),
                               TAO_PEGTL_STRING("fs")> {};
+struct scope_type : pegtl::sor<TAO_PEGTL_STRING("begin"), TAO_PEGTL_STRING("fork"), TAO_PEGTL_STRING("function"), TAO_PEGTL_STRING("module"),
+                               TAO_PEGTL_STRING("task")> {};
 
 // Keyword commands
 struct command_comment : pegtl::seq<dkw_comment, mandatory_space, text_comment, mandatory_space, kw_end> {};
 struct command_date : pegtl::seq<dkw_date, mandatory_space, text_date, mandatory_space, kw_end> {};
 struct command_enddefinition : pegtl::seq<dkw_enddefinitions, mandatory_space, kw_end> {};
+struct command_scope : pegtl::seq<dkw_scope, mandatory_space, scope_type, mandatory_space, scope_identifier, mandatory_space, kw_end> {};
 struct command_timescale : pegtl::seq<dkw_timescale, mandatory_space, time_number, mandatory_space, time_unit, mandatory_space, kw_end> {};
+struct command_upscope : pegtl::seq<dkw_upscope, mandatory_space, kw_end> {};
 struct command_version : pegtl::seq<dkw_version, mandatory_space, text_version, mandatory_space, kw_end> {};
 
-struct declaration_command : pegtl::sor<command_comment, command_date, command_timescale, command_version> {};
+struct declaration_command : pegtl::sor<command_comment, command_date, command_scope, command_timescale, command_upscope, command_version> {};
 
 // Sections
 struct header_section : pegtl::star<whitespaces, declaration_command, whitespaces> {};

@@ -6,6 +6,23 @@
 
 namespace VCDP_NAMESPACE {
 
+inline std::string NormalizeSpaces(const std::string& input) {
+    std::istringstream iss(input);
+    std::ostringstream oss;
+    std::string word;
+
+    bool first = true;
+    while (iss >> word) {
+        if (!first) {
+            oss << " ";
+        }
+        oss << word;
+        first = false;
+    }
+
+    return oss.str();
+}
+
 template <typename Rule>
 struct action : pegtl::nothing<Rule> {};
 
@@ -14,7 +31,9 @@ template <>
 struct action<lexical::text_comment> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
-        file.comment = in.string();
+        const std::string comment = in.string();
+
+        file.comment = NormalizeSpaces(comment);
     }
 };
 

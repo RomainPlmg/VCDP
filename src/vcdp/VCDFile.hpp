@@ -92,8 +92,8 @@ class VCDFile {
     /// @brief Version string of the simulator which generated the VCD.
     std::string comment;
 
-    /// @brief Root scope node of the VCD signals
-    VCDScope* root_scope = nullptr;
+    /// @brief Root scope nodes of the VCD signals
+    std::vector<VCDScope*> root_scopes;
 
    private:
     std::vector<VCDSignal*> m_Signals;
