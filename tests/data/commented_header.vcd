@@ -8,6 +8,6 @@ $timescale
   1 ns
 $end
 $comment
-    This is a test VCD file
+  This is a test VCD file
 $end
 $enddefinitions $end

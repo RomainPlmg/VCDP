@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.8...3.19)
 set(test_sources
         minimal_header.cpp
         commented_header.cpp
+        oneline_header.cpp
+        tabed_header.cpp
         incomplete_header.cpp
 )
 
@@ -29,6 +31,8 @@ foreach (test_source_file ${test_sources})
     else ()
         target_compile_options(${exe_name} PRIVATE -pedantic -Wall -Wextra -Wshadow -Werror)
     endif ()
+
+    target_compile_definitions(${exe_name} PRIVATE TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data/")
 
     add_test(NAME ${exe_name} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} COMMAND ${exe_name})
 

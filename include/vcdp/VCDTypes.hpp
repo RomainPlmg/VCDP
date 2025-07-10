@@ -99,6 +99,7 @@ enum class VCDTimeUnit {
     TIME_US,       ///< Microseconds
     TIME_NS,       ///< Nanoseconds
     TIME_PS,       ///< Picoseconds
+    TIME_FS,       ///< Femtoseconde
 };
 
 /// @brief Represents the type of SV construct whose scope we are in.
