@@ -1,0 +1,14 @@
+$date
+	Tue Jul  8 15:36:41 2025
+$end
+$version
+	QuestaSim Version 2024.2
+$end
+$timescale
+	1ns
+$end
+
+$var wire 1 ! clk $end
+$scope module tb_counter $end
+$upscope $end
+$enddefinitions $end

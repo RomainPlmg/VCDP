@@ -13,6 +13,11 @@ set(test_sources
         "header_nested_scopes.cpp"
         "header_multi_topscopes.cpp"
         "header_simple_var.cpp"
+        "header_indexed_var.cpp"
+        "header_ranged_var.cpp"
+        "header_var_without_scope.cpp"
+        "header_indexed_var_size_inconsistent.cpp"
+        "header_ranged_var_size_inconsistent.cpp"
 )
 
 # file(GLOB ...) is used to validate the above list of test_sources

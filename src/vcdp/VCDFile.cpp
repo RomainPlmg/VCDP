@@ -1,5 +1,6 @@
 #include "vcdp/VCDFile.hpp"
 
+#include "vcdp/VCDCheckers.hpp"
 #include "vcdp/VCDTypes.hpp"
 
 namespace VCDP_NAMESPACE {
@@ -30,6 +31,7 @@ void VCDFile::AddSignal() {
     if (current_signal_builder.IsComplete()) {
         auto signal = current_signal_builder.Build(current_scope);
         VCDSignal* p_signal = signal.get();
+        checkers::ValidateVCDSignal(*p_signal);
         m_Signals.push_back(std::move(signal));
         current_scope->signals.push_back(p_signal);
 

@@ -67,12 +67,12 @@ struct var_type
                  TAO_PEGTL_STRING("realtime"), TAO_PEGTL_STRING("reg"), TAO_PEGTL_STRING("supply0"), TAO_PEGTL_STRING("supply1"),
                  TAO_PEGTL_STRING("time"), TAO_PEGTL_STRING("tri"), TAO_PEGTL_STRING("triand"), TAO_PEGTL_STRING("trior"), TAO_PEGTL_STRING("trireg"),
                  TAO_PEGTL_STRING("tri0"), TAO_PEGTL_STRING("tri1"), TAO_PEGTL_STRING("wand"), TAO_PEGTL_STRING("wire"), TAO_PEGTL_STRING("wor")> {};
+struct var_end : kw_end {};
 
 // In $var, the [0] or [3:0] for example
-struct bit_select_index : number {};
 struct lsb_index : number {};
 struct msb_index : number {};
-struct bit_index_seq : pegtl::seq<pegtl::one<'['>, whitespaces, bit_select_index, whitespaces, pegtl::one<']'>> {};
+struct bit_index_seq : pegtl::seq<pegtl::one<'['>, whitespaces, lsb_index, whitespaces, pegtl::one<']'>> {};
 struct bit_range_seq
     : pegtl::seq<pegtl::one<'['>, whitespaces, msb_index, whitespaces, pegtl::one<':'>, whitespaces, lsb_index, whitespaces, pegtl::one<']'>> {};
 struct var_reference : pegtl::seq<var_name, pegtl::opt<pegtl::seq<whitespaces, pegtl::sor<bit_index_seq, bit_range_seq>>>> {};
@@ -85,7 +85,7 @@ struct command_scope : pegtl::seq<dkw_scope, mandatory_space, scope_type, mandat
 struct command_timescale : pegtl::seq<dkw_timescale, mandatory_space, time_number, whitespaces, time_unit, mandatory_space, kw_end> {};
 struct command_upscope : pegtl::seq<dkw_upscope, mandatory_space, kw_end> {};
 struct command_var : pegtl::seq<dkw_var, mandatory_space, var_type, mandatory_space, var_size, mandatory_space, var_identifier, mandatory_space,
-                                var_reference, mandatory_space, kw_end> {};
+                                var_reference, mandatory_space, var_end> {};
 struct command_version : pegtl::seq<dkw_version, mandatory_space, text_version, mandatory_space, kw_end> {};
 
 struct declaration_command

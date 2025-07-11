@@ -200,6 +200,32 @@ struct action<lexical::var_name> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
         file.current_signal_builder.reference = in.string();
+    }
+};
+
+/// @brief Capture lsb index
+template <>
+struct action<lexical::lsb_index> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        file.current_signal_builder.rindex = std::stoi(in.string());
+    }
+};
+
+/// @brief Capture msb index
+template <>
+struct action<lexical::msb_index> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        file.current_signal_builder.lindex = std::stoi(in.string());
+    }
+};
+
+/// @brief Capture single bit range signal
+template <>
+struct action<lexical::var_end> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
         file.AddSignal();
     }
 };
