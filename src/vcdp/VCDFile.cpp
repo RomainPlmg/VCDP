@@ -1,15 +1,10 @@
 #include "vcdp/VCDFile.hpp"
 
+#include "vcdp/VCDTypes.hpp"
+
 namespace VCDP_NAMESPACE {
 
 VCDFile::~VCDFile() {
-    // Delete signals & scopes.
-    for (const auto& scope : m_Scopes) {
-        for (const auto& signal : scope->signals) {
-            delete signal;
-        }
-    }
-
     // Delete signal values.
     for (auto& [hash, values] : m_ValMap) {
         for (const auto& value : *values) {
@@ -31,10 +26,12 @@ void VCDFile::AddScope() {
     }
 }
 
-void VCDFile::AddSignal(VCDSignal* p_signal) {
+void VCDFile::AddSignal() {
     if (current_signal_builder.IsComplete()) {
         auto signal = current_signal_builder.Build(current_scope);
+        VCDSignal* p_signal = signal.get();
         m_Signals.push_back(std::move(signal));
+        current_scope->signals.push_back(p_signal);
 
         // Add timestamp entry
         if (m_ValMap.find(p_signal->hash) == m_ValMap.end()) {

@@ -5,13 +5,14 @@
 
 TEST_CASE("Basic var section in the header") {
     vcdp::VCDParser parser;
-    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_simple_scope.vcd");
+    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_simple_var.vcd");
     REQUIRE(trace != nullptr);
 
     const auto& top_module = trace->GetScope("tb_counter");
     REQUIRE(top_module != nullptr);
     CHECK(top_module->signals.size() == 1);
     const auto& signal = top_module->signals.at(0);
+    REQUIRE(signal != nullptr);
     CHECK(signal->hash == "!");
     CHECK(signal->reference == "clk");
     CHECK(signal->scope == top_module);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "Config.hpp"
 #include "VCDFile.hpp"
 #include "VCDLexical.hpp"
@@ -124,6 +126,81 @@ struct action<lexical::command_upscope> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
         if (file.current_scope != nullptr) file.current_scope = file.current_scope->parent;
+    }
+};
+
+/// @brief Capture variable type
+template <>
+struct action<lexical::var_type> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        std::string type = in.string();
+        if (type == "event")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_EVENT;
+        else if (type == "integer")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_INTEGER;
+        else if (type == "parameter")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_PARAMETER;
+        else if (type == "real")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_REAL;
+        else if (type == "realtime")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_REALTIME;
+        else if (type == "reg")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_REG;
+        else if (type == "supply0")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_SUPPLY0;
+        else if (type == "supply1")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_SUPPLY1;
+        else if (type == "time")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_TIME;
+        else if (type == "tri")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_TRI;
+        else if (type == "triand")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_TRIAND;
+        else if (type == "trior")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_TRIOR;
+        else if (type == "trireg")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_TRIREG;
+        else if (type == "tri0")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_TRI0;
+        else if (type == "tri1")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_TRI1;
+        else if (type == "wand")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_WAND;
+        else if (type == "wire")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_WIRE;
+        else if (type == "wor")
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_WOR;
+        else
+            file.current_signal_builder.type = VCDVarType::VCD_VAR_UNKNOWN;
+    }
+};
+
+/// @brief Capture variable size
+template <>
+struct action<lexical::var_size> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        file.current_signal_builder.size = std::stoi(in.string());
+    }
+};
+
+/// @brief Capture variable ID
+template <>
+struct action<lexical::var_identifier> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        file.current_signal_builder.hash = in.string();
+    }
+};
+
+/// @brief Capture variable name
+template <>
+struct action<lexical::var_name> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        file.current_signal_builder.reference = in.string();
+        file.AddSignal();
     }
 };
 

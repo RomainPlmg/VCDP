@@ -75,7 +75,7 @@ struct msb_index : number {};
 struct bit_index_seq : pegtl::seq<pegtl::one<'['>, whitespaces, bit_select_index, whitespaces, pegtl::one<']'>> {};
 struct bit_range_seq
     : pegtl::seq<pegtl::one<'['>, whitespaces, msb_index, whitespaces, pegtl::one<':'>, whitespaces, lsb_index, whitespaces, pegtl::one<']'>> {};
-struct var_reference : pegtl::seq<var_name, whitespaces, pegtl::opt<pegtl::sor<bit_index_seq, bit_range_seq>>> {};
+struct var_reference : pegtl::seq<var_name, pegtl::opt<pegtl::seq<whitespaces, pegtl::sor<bit_index_seq, bit_range_seq>>>> {};
 
 // Keyword commands
 struct command_comment : pegtl::seq<dkw_comment, mandatory_space, text_comment, mandatory_space, kw_end> {};
@@ -84,8 +84,8 @@ struct command_enddefinition : pegtl::seq<dkw_enddefinitions, mandatory_space, k
 struct command_scope : pegtl::seq<dkw_scope, mandatory_space, scope_type, mandatory_space, scope_identifier, mandatory_space, kw_end> {};
 struct command_timescale : pegtl::seq<dkw_timescale, mandatory_space, time_number, whitespaces, time_unit, mandatory_space, kw_end> {};
 struct command_upscope : pegtl::seq<dkw_upscope, mandatory_space, kw_end> {};
-struct command_var
-    : pegtl::seq<dkw_var, mandatory_space, var_type, mandatory_space, var_size, mandatory_space, var_identifier, mandatory_space, var_reference> {};
+struct command_var : pegtl::seq<dkw_var, mandatory_space, var_type, mandatory_space, var_size, mandatory_space, var_identifier, mandatory_space,
+                                var_reference, mandatory_space, kw_end> {};
 struct command_version : pegtl::seq<dkw_version, mandatory_space, text_version, mandatory_space, kw_end> {};
 
 struct declaration_command
