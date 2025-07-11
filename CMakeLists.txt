@@ -20,6 +20,6 @@ option(BUILD_STATIC_LIB "Build as a static library instead of header-only" OFF)
 add_library(vcdp STATIC ${SRC_FILES})
 
 target_link_libraries(vcdp PUBLIC pegtl)
-target_include_directories(vcdp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(vcdp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_subdirectory(tests)

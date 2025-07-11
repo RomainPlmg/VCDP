@@ -1,4 +1,4 @@
-#include "VCDFile.hpp"
+#include "vcdp/VCDFile.hpp"
 
 namespace VCDP_NAMESPACE {
 

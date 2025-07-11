@@ -1,7 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
-#include "VCDP.hpp"
+#include "vcdp/VCDP.hpp"
 
 TEST_CASE("Open multiline comment VCD file") {
     vcdp::VCDParser parser;

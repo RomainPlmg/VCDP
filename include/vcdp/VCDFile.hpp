@@ -4,7 +4,7 @@
 
 #include "Config.hpp"
 #include "VCDTypes.hpp"
-#include "VCDValue.h"
+#include "VCDValue.hpp"
 
 /// @brief Top level object to represent a single VCD file.
 

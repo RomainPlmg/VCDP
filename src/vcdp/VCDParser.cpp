@@ -1,9 +1,9 @@
-#include "VCDParser.hpp"
+#include "vcdp/VCDParser.hpp"
 
 #include <iostream>
 #include <tao/pegtl/contrib/trace.hpp>
 
-#include "VCDActions.hpp"
+#include "vcdp/VCDActions.hpp"
 
 namespace VCDP_NAMESPACE {
 
