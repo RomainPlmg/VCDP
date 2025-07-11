@@ -3,9 +3,9 @@
 
 #include "vcdp/VCDP.hpp"
 
-TEST_CASE("Open multiline comment VCD file") {
+TEST_CASE("Comment section is multiple lines") {
     vcdp::VCDParser parser;
-    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "multiline_comment.vcd");
+    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_multiline_comment.vcd");
     REQUIRE(trace != nullptr);
 
     CHECK(trace->date == "Thu Jul 03 14:17:23 2025");

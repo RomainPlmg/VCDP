@@ -10,6 +10,20 @@
 
 namespace VCDP_NAMESPACE {
 
+struct VCDScopeBuilder {
+    std::string name;
+    VCDScopeType type;
+    bool IsComplete() const { return !name.empty() && type != VCDScopeType::VCD_SCOPE_UNKNOWN; }
+
+    VCDScope* Build(VCDScope* parent) {
+        VCDScope* scope = new VCDScope();
+        scope->name = name;
+        scope->type = type;
+        scope->parent = parent;
+        return scope;
+    }
+};
+
 class VCDFile {
    public:
     /// @brief Instance a new VCD file container.
@@ -22,7 +36,7 @@ class VCDFile {
      * @brief Add a new scope object to the VCD file.
      * @param p_scope The VCDScope object to add to the VCD file.
      */
-    void AddScope(VCDScope* p_scope) { m_Scopes.push_back(p_scope); }
+    void AddScope();
 
     /**
      * @brief Add a new signal to the VCD file.
@@ -92,8 +106,11 @@ class VCDFile {
     /// @brief Version string of the simulator which generated the VCD.
     std::string comment;
 
-    /// @brief Root scope nodes of the VCD signals
-    std::vector<VCDScope*> root_scopes;
+    /// @brief The current scope buing build by the parser
+    VCDScopeBuilder current_scope_builder;
+
+    /// @brief current scope nodes of the VCD signals -> To manage parents & children
+    VCDScope* current_scope;
 
    private:
     std::vector<VCDSignal*> m_Signals;

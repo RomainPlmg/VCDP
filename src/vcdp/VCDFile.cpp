@@ -21,6 +21,16 @@ VCDFile::~VCDFile() {
     }
 }
 
+void VCDFile::AddScope() {
+    if (current_scope_builder.IsComplete()) {
+        VCDScope* scope = current_scope_builder.Build(current_scope);
+        m_Scopes.push_back(scope);
+        if (current_scope != nullptr) current_scope->children.push_back(scope);
+        current_scope = scope;
+        current_scope_builder = VCDScopeBuilder{};  // Reset
+    }
+}
+
 void VCDFile::AddSignal(VCDSignal* p_signal) {
     m_Signals.push_back(p_signal);
 

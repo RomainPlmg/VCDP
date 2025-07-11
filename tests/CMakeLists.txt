@@ -1,12 +1,17 @@
 cmake_minimum_required(VERSION 3.8...3.19)
 
 set(test_sources
-        minimal_header.cpp
-        commented_header.cpp
-        oneline_header.cpp
-        tabed_header.cpp
-        multiline_comment.cpp
-        incomplete_header.cpp
+        "empty_file.cpp"
+        "header_incomplete.cpp"
+        "header_simple.cpp"
+        "header_comment.cpp"
+        "header_oneline.cpp"
+        "header_tabed.cpp"
+        "header_multiline_comment.cpp"
+        "header_stuck_timescale.cpp"
+        "header_simple_scope.cpp"
+        "header_nested_scopes.cpp"
+        "header_multi_topscopes.cpp"
 )
 
 # file(GLOB ...) is used to validate the above list of test_sources

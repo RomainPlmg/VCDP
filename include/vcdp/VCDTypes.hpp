@@ -103,7 +103,7 @@ enum class VCDTimeUnit {
 };
 
 /// @brief Represents the type of SV construct whose scope we are in.
-enum class VCDScopeType { VCD_SCOPE_BEGIN, VCD_SCOPE_FORK, VCD_SCOPE_FUNCTION, VCD_SCOPE_MODULE, VCD_SCOPE_TASK, VCD_SCOPE_ROOT };
+enum class VCDScopeType { VCD_SCOPE_UNKNOWN, VCD_SCOPE_BEGIN, VCD_SCOPE_FORK, VCD_SCOPE_FUNCTION, VCD_SCOPE_MODULE, VCD_SCOPE_TASK, VCD_SCOPE_ROOT };
 
 // Forward declaration of VCDScope to make it available to VCDSignal struct.
 struct VCDScope;

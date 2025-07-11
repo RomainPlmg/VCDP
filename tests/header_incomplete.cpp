@@ -3,8 +3,8 @@
 
 #include "vcdp/VCDP.hpp"
 
-TEST_CASE("Open incomplete VCD header file") {
+TEST_CASE("Incomplete header") {
     vcdp::VCDParser parser;
-    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "incomplete_header.vcd");
+    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_incomplete.vcd");
     REQUIRE(trace == nullptr);
 }

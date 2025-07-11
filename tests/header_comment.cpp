@@ -3,9 +3,9 @@
 
 #include "vcdp/VCDP.hpp"
 
-TEST_CASE("Open one line VCD header file") {
+TEST_CASE("Basic header with a comment section") {
     vcdp::VCDParser parser;
-    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "oneline_header.vcd");
+    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_comment.vcd");
     REQUIRE(trace != nullptr);
 
     CHECK(trace->date == "Thu Jul 03 14:17:23 2025");
