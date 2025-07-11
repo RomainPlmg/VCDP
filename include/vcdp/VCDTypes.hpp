@@ -71,6 +71,7 @@ using VCDSignalValues = std::vector<VCDTimedValue*>;
 
 /// @brief Variable types of a signal in a VCD file.
 enum class VCDVarType {
+    VCD_VAR_UNKNOWN,
     VCD_VAR_EVENT,
     VCD_VAR_INTEGER,
     VCD_VAR_PARAMETER,

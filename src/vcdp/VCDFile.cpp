@@ -32,12 +32,17 @@ void VCDFile::AddScope() {
 }
 
 void VCDFile::AddSignal(VCDSignal* p_signal) {
-    m_Signals.push_back(std::unique_ptr<VCDSignal>(p_signal));
+    if (current_signal_builder.IsComplete()) {
+        auto signal = current_signal_builder.Build(current_scope);
+        m_Signals.push_back(std::move(signal));
 
-    // Add timestamp entry
-    if (m_ValMap.find(p_signal->hash) == m_ValMap.end()) {
-        // Value will be populated later
-        m_ValMap[p_signal->hash] = new VCDSignalValues();
+        // Add timestamp entry
+        if (m_ValMap.find(p_signal->hash) == m_ValMap.end()) {
+            // Value will be populated later
+            m_ValMap[p_signal->hash] = new VCDSignalValues();
+        }
+
+        current_signal_builder = VCDSignalBuilder{};  // Reset
     }
 }
 

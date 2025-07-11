@@ -12,6 +12,7 @@ set(test_sources
         "header_simple_scope.cpp"
         "header_nested_scopes.cpp"
         "header_multi_topscopes.cpp"
+        "header_simple_var.cpp"
 )
 
 # file(GLOB ...) is used to validate the above list of test_sources

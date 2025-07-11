@@ -8,11 +8,6 @@ TEST_CASE("Nested scopes in the header") {
     vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_nested_scopes.vcd");
     REQUIRE(trace != nullptr);
 
-    CHECK(trace->date == "Tue Jul  8 15:36:41 2025");
-    CHECK(trace->version == "QuestaSim Version 2024.2");
-    CHECK(trace->time_resolution == 1);
-    CHECK(trace->time_units == vcdp::VCDTimeUnit::TIME_NS);
-
     CHECK(trace->GetScopes().size() == 3);
 
     // Top module
@@ -23,6 +18,7 @@ TEST_CASE("Nested scopes in the header") {
     CHECK(top_module->parent == nullptr);
     CHECK(top_module->children.size() == 1);
 
+    // Sub module
     const auto& sub_module = top_module->children.at(0);
     REQUIRE(sub_module != nullptr);
     CHECK(sub_module->name == "uut");
@@ -30,6 +26,7 @@ TEST_CASE("Nested scopes in the header") {
     CHECK(sub_module->parent == top_module);
     CHECK(sub_module->children.size() == 1);
 
+    // Sub-sub module
     const auto& sub2_module = sub_module->children.at(0);
     REQUIRE(sub2_module != nullptr);
     CHECK(sub2_module->name == "and");

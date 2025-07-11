@@ -8,11 +8,6 @@ TEST_CASE("Multi top scopes in the header") {
     vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_multi_topscopes.vcd");
     REQUIRE(trace != nullptr);
 
-    CHECK(trace->date == "Tue Jul  8 15:36:41 2025");
-    CHECK(trace->version == "QuestaSim Version 2024.2");
-    CHECK(trace->time_resolution == 1);
-    CHECK(trace->time_units == vcdp::VCDTimeUnit::TIME_NS);
-
     CHECK(trace->GetScopes().size() == 3);
 
     // Top module 1

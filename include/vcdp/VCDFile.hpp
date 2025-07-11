@@ -11,8 +11,8 @@
 namespace VCDP_NAMESPACE {
 
 struct VCDScopeBuilder {
-    std::string name;
-    VCDScopeType type;
+    VCDScopeName name;
+    VCDScopeType type = VCDScopeType::VCD_SCOPE_UNKNOWN;
     bool IsComplete() const { return !name.empty() && type != VCDScopeType::VCD_SCOPE_UNKNOWN; }
 
     std::unique_ptr<VCDScope> Build(VCDScope* parent) {
@@ -21,6 +21,28 @@ struct VCDScopeBuilder {
         scope->type = type;
         scope->parent = parent;
         return scope;
+    }
+};
+
+struct VCDSignalBuilder {
+    VCDSignalHash hash;
+    VCDSignalReference reference;
+    VCDSignalSize size = 0;
+    VCDVarType type = VCDVarType::VCD_VAR_UNKNOWN;
+    int lindex = -1;
+    int rindex = -1;
+    bool IsComplete() const { return !hash.empty() && !reference.empty() && size > 0 && type != VCDVarType::VCD_VAR_UNKNOWN; }
+
+    std::unique_ptr<VCDSignal> Build(VCDScope* scope) {
+        auto signal = std::make_unique<VCDSignal>();
+        signal->hash = hash;
+        signal->reference = reference;
+        signal->size = size;
+        signal->type = type;
+        signal->lindex = lindex;
+        signal->rindex = rindex;
+        signal->scope = scope;
+        return signal;
     }
 };
 
@@ -106,8 +128,11 @@ class VCDFile {
     /// @brief Version string of the simulator which generated the VCD.
     std::string comment;
 
-    /// @brief The current scope buing build by the parser
+    /// @brief The current scope build by the parser
     VCDScopeBuilder current_scope_builder;
+
+    /// @brief The current signal build by the parser
+    VCDSignalBuilder current_signal_builder;
 
     /// @brief current scope nodes of the VCD signals -> To manage parents & children
     VCDScope* current_scope;
