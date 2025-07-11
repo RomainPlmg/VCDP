@@ -15,8 +15,8 @@ struct VCDScopeBuilder {
     VCDScopeType type;
     bool IsComplete() const { return !name.empty() && type != VCDScopeType::VCD_SCOPE_UNKNOWN; }
 
-    VCDScope* Build(VCDScope* parent) {
-        VCDScope* scope = new VCDScope();
+    std::unique_ptr<VCDScope> Build(VCDScope* parent) {
+        auto scope = std::make_unique<VCDScope>();
         scope->name = name;
         scope->type = type;
         scope->parent = parent;
@@ -86,10 +86,10 @@ class VCDFile {
     [[nodiscard]] const std::vector<VCDTime>& GetTimestamps() const { return m_Times; }
 
     /// @brief Get a vector of all scopes present in the file.
-    [[nodiscard]] const std::vector<VCDScope*>& GetScopes() const { return m_Scopes; }
+    [[nodiscard]] const std::vector<std::unique_ptr<VCDScope>>& GetScopes() const { return m_Scopes; }
 
     /// @brief Return a flattened vector of all signals in the file.
-    [[nodiscard]] const std::vector<VCDSignal*>& GetSignals() const { return m_Signals; }
+    [[nodiscard]] const std::vector<std::unique_ptr<VCDSignal>>& GetSignals() const { return m_Signals; }
 
     /// @brief Timescale of the VCD file.
     VCDTimeUnit time_units = VCDTimeUnit::TIME_UNKNOWN;
@@ -113,8 +113,8 @@ class VCDFile {
     VCDScope* current_scope;
 
    private:
-    std::vector<VCDSignal*> m_Signals;
-    std::vector<VCDScope*> m_Scopes;
+    std::vector<std::unique_ptr<VCDSignal>> m_Signals;
+    std::vector<std::unique_ptr<VCDScope>> m_Scopes;
     std::vector<VCDTime> m_Times;
     std::unordered_map<VCDSignalHash, VCDSignalValues*> m_ValMap;
 };

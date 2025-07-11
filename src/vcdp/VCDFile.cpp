@@ -8,7 +8,6 @@ VCDFile::~VCDFile() {
         for (const auto& signal : scope->signals) {
             delete signal;
         }
-        delete scope;
     }
 
     // Delete signal values.
@@ -23,16 +22,17 @@ VCDFile::~VCDFile() {
 
 void VCDFile::AddScope() {
     if (current_scope_builder.IsComplete()) {
-        VCDScope* scope = current_scope_builder.Build(current_scope);
-        m_Scopes.push_back(scope);
-        if (current_scope != nullptr) current_scope->children.push_back(scope);
-        current_scope = scope;
+        auto scope = current_scope_builder.Build(current_scope);
+        VCDScope* child_scope = scope.get();
+        m_Scopes.push_back(std::move(scope));
+        if (current_scope != nullptr) current_scope->children.push_back(child_scope);
+        current_scope = child_scope;
         current_scope_builder = VCDScopeBuilder{};  // Reset
     }
 }
 
 void VCDFile::AddSignal(VCDSignal* p_signal) {
-    m_Signals.push_back(p_signal);
+    m_Signals.push_back(std::unique_ptr<VCDSignal>(p_signal));
 
     // Add timestamp entry
     if (m_ValMap.find(p_signal->hash) == m_ValMap.end()) {
@@ -43,7 +43,7 @@ void VCDFile::AddSignal(VCDSignal* p_signal) {
 
 VCDScope* VCDFile::GetScope(const VCDScopeName& name) const {
     for (const auto& scope : m_Scopes) {
-        if (scope->name == name) return scope;
+        if (scope->name == name) return scope.get();
     }
     return nullptr;
 }
