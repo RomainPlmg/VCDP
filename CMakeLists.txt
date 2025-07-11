@@ -5,6 +5,15 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    # Désactiver clang-tidy avec MSVC
+    set(CMAKE_CXX_CLANG_TIDY "")
+    message(STATUS "Clang-Tidy disabled with MSVC")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    # Activer seulement avec Clang
+    set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+endif()
+
 enable_testing()
 
 add_subdirectory(libs/pegtl)
