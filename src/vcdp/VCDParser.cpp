@@ -21,27 +21,28 @@ VCDFile* VCDParser::Parse(const std::string& file_path) {
         switch (m_DebugMode) {
             case DebugMode::Tracer:
                 if (!pegtl::standard_trace<lexical::grammar, action>(in, *m_File)) {
-                    return nullptr;
+                    m_Result.success = false;
                 }
                 break;
 
             default:
                 if (!pegtl::parse<lexical::grammar, action>(in, *m_File)) {
-                    return nullptr;
+                    m_Result.success = false;
                 }
                 break;
         }
     } catch (const VCDValidationError& e) {
         m_Result.success = false;
         m_Result.errors.emplace_back(e.what());
-        return nullptr;
     } catch (const tao::pegtl::parse_error& e) {
         m_Result.success = false;
         m_Result.errors.push_back("Parse error: " + std::string(e.what()));
-        return nullptr;
     }
 
-    return m_File.get();
+    if (m_Result.success) {
+        return m_File.get();
+    }
+    return nullptr;
 }
 
 void VCDParser::SetDebugMode(DebugMode debug_mode) { m_DebugMode = debug_mode; }
