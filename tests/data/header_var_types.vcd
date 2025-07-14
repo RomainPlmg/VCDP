@@ -1,0 +1,31 @@
+$date
+	Tue Jul  8 15:36:41 2025
+$end
+$version
+	QuestaSim Version 2024.2
+$end
+$timescale
+	1ns
+$end
+
+$scope module test_var_types $end
+	$var event 1 ! sig_event $end
+	$var integer 1 " sig_integer $end
+	$var parameter 1 # sig_parameter $end
+	$var real 1 $ sig_real $end
+	$var realtime 1 % sig_realtime $end
+	$var reg 1 & sig_reg $end
+	$var supply0 1 ' sig_supply0 $end
+	$var supply1 1 ( sig_supply1 $end
+	$var time 1 ) sig_time $end
+	$var tri 1 * sig_tri $end
+	$var triand 1 + sig_triand $end
+	$var trior 1 , sig_trior $end
+	$var trireg 1 - sig_trireg $end
+	$var tri0 1 . sig_tri0 $end
+	$var wand 1 / sig_wand $end
+	$var wire 1 : sig_wire $end
+	$var wor 1 ; sig_wor $end
+$upscope $end
+
+$enddefinitions $end

@@ -36,17 +36,13 @@ struct VCDParseResult {
 
 class VCDParser {
    public:
-    enum class DebugMode { None, Tracer };
     VCDFile* Parse(const std::string& file_path);
 
     const VCDParseResult& GetResult() const { return m_Result; }
 
-    void SetDebugMode(DebugMode debug_mode);
-
    private:
     std::string m_FilePath;
     std::unique_ptr<VCDFile> m_File;
-    DebugMode m_DebugMode = DebugMode::None;
     VCDParseResult m_Result;
 };
 

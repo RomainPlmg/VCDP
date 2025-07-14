@@ -15,22 +15,10 @@ VCDFile* VCDParser::Parse(const std::string& file_path) {
 
     m_Result.Clear();
 
-    pegtl::file_input in(file_path);
-
     try {
-        switch (m_DebugMode) {
-            case DebugMode::Tracer:
-                if (!pegtl::standard_trace<lexical::grammar, action>(in, *m_File)) {
-                    m_Result.success = false;
-                }
-                break;
+        pegtl::file_input in(file_path);
+        pegtl::parse<lexical::grammar, action>(in, *m_File);
 
-            default:
-                if (!pegtl::parse<lexical::grammar, action>(in, *m_File)) {
-                    m_Result.success = false;
-                }
-                break;
-        }
     } catch (const VCDValidationError& e) {
         m_Result.success = false;
         m_Result.errors.emplace_back(e.what());
@@ -39,12 +27,10 @@ VCDFile* VCDParser::Parse(const std::string& file_path) {
         m_Result.errors.push_back("Parse error: " + std::string(e.what()));
     }
 
-    if (m_Result.success) {
-        return m_File.get();
+    if (!m_Result.success) {
+        return nullptr;
     }
-    return nullptr;
+    return m_File.get();
 }
-
-void VCDParser::SetDebugMode(DebugMode debug_mode) { m_DebugMode = debug_mode; }
 
 }  // namespace VCDP_NAMESPACE

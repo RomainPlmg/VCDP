@@ -62,11 +62,11 @@ struct time_unit : pegtl::sor<TAO_PEGTL_STRING("s"), TAO_PEGTL_STRING("ms"), TAO
                               TAO_PEGTL_STRING("fs")> {};
 struct scope_type : pegtl::sor<TAO_PEGTL_STRING("begin"), TAO_PEGTL_STRING("fork"), TAO_PEGTL_STRING("function"), TAO_PEGTL_STRING("module"),
                                TAO_PEGTL_STRING("task")> {};
-struct var_type
-    : pegtl::sor<TAO_PEGTL_STRING("event"), TAO_PEGTL_STRING("integer"), TAO_PEGTL_STRING("parameter"), TAO_PEGTL_STRING("real"),
-                 TAO_PEGTL_STRING("realtime"), TAO_PEGTL_STRING("reg"), TAO_PEGTL_STRING("supply0"), TAO_PEGTL_STRING("supply1"),
-                 TAO_PEGTL_STRING("time"), TAO_PEGTL_STRING("tri"), TAO_PEGTL_STRING("triand"), TAO_PEGTL_STRING("trior"), TAO_PEGTL_STRING("trireg"),
-                 TAO_PEGTL_STRING("tri0"), TAO_PEGTL_STRING("tri1"), TAO_PEGTL_STRING("wand"), TAO_PEGTL_STRING("wire"), TAO_PEGTL_STRING("wor")> {};
+struct var_type : pegtl::sor<TAO_PEGTL_STRING("event"), TAO_PEGTL_STRING("integer"), TAO_PEGTL_STRING("parameter"), TAO_PEGTL_STRING("realtime"),
+                             TAO_PEGTL_STRING("real"), TAO_PEGTL_STRING("reg"), TAO_PEGTL_STRING("supply0"), TAO_PEGTL_STRING("supply1"),
+                             TAO_PEGTL_STRING("time"), TAO_PEGTL_STRING("triand"), TAO_PEGTL_STRING("trior"), TAO_PEGTL_STRING("trireg"),
+                             TAO_PEGTL_STRING("tri0"), TAO_PEGTL_STRING("tri1"), TAO_PEGTL_STRING("tri"), TAO_PEGTL_STRING("wand"),
+                             TAO_PEGTL_STRING("wire"), TAO_PEGTL_STRING("wor")> {};
 struct var_end : kw_end {};
 
 // In $var, the [0] or [3:0] for example
@@ -78,27 +78,32 @@ struct bit_range_seq
 struct var_reference : pegtl::seq<var_name, pegtl::opt<pegtl::seq<whitespaces, pegtl::sor<bit_index_seq, bit_range_seq>>>> {};
 
 // Keyword commands
-struct command_comment : pegtl::seq<dkw_comment, mandatory_space, text_comment, mandatory_space, kw_end> {};
-struct command_date : pegtl::seq<dkw_date, mandatory_space, text_date, mandatory_space, kw_end> {};
-struct command_enddefinition : pegtl::seq<dkw_enddefinitions, mandatory_space, kw_end> {};
-struct command_scope : pegtl::seq<dkw_scope, mandatory_space, scope_type, mandatory_space, scope_identifier, mandatory_space, kw_end> {};
-struct command_timescale : pegtl::seq<dkw_timescale, mandatory_space, time_number, whitespaces, time_unit, mandatory_space, kw_end> {};
-struct command_upscope : pegtl::seq<dkw_upscope, mandatory_space, kw_end> {};
-struct command_var : pegtl::seq<dkw_var, mandatory_space, var_type, mandatory_space, var_size, mandatory_space, var_identifier, mandatory_space,
-                                var_reference, mandatory_space, var_end> {};
-struct command_version : pegtl::seq<dkw_version, mandatory_space, text_version, mandatory_space, kw_end> {};
+struct command_comment
+    : pegtl::seq<dkw_comment, pegtl::must<mandatory_space>, pegtl::must<text_comment>, pegtl::must<mandatory_space>, pegtl::must<kw_end>> {};
+struct command_date : pegtl::seq<dkw_date, pegtl::must<mandatory_space>, pegtl::must<text_date>, pegtl::must<mandatory_space>, pegtl::must<kw_end>> {
+};
+struct command_enddefinitions : pegtl::seq<dkw_enddefinitions, pegtl::must<mandatory_space>, pegtl::must<kw_end>> {};
+struct command_scope : pegtl::seq<dkw_scope, pegtl::must<mandatory_space>, pegtl::must<scope_type>, pegtl::must<mandatory_space>,
+                                  pegtl::must<scope_identifier>, pegtl::must<mandatory_space>, pegtl::must<kw_end>> {};
+struct command_timescale : pegtl::seq<dkw_timescale, pegtl::must<mandatory_space>, pegtl::must<time_number>, whitespaces, pegtl::must<time_unit>,
+                                      pegtl::must<mandatory_space>, pegtl::must<kw_end>> {};
+struct command_upscope : pegtl::seq<dkw_upscope, pegtl::must<mandatory_space>, pegtl::must<kw_end>> {};
+struct command_var : pegtl::seq<dkw_var, pegtl::must<mandatory_space>, pegtl::must<var_type>, pegtl::must<mandatory_space>, pegtl::must<var_size>,
+                                pegtl::must<mandatory_space>, pegtl::must<var_identifier>, pegtl::must<mandatory_space>, pegtl::must<var_reference>,
+                                pegtl::must<mandatory_space>, pegtl::must<var_end>> {};
+struct command_version : pegtl::seq<dkw_version, pegtl::must<mandatory_space>, text_version, pegtl::must<mandatory_space>, pegtl::must<kw_end>> {};
 
 struct declaration_command
     : pegtl::sor<command_comment, command_date, command_scope, command_timescale, command_upscope, command_var, command_version> {};
 
 // Sections
-struct header_section : pegtl::star<whitespaces, declaration_command, whitespaces> {};
-struct declaration_section : pegtl::seq<header_section, whitespaces, command_enddefinition, whitespaces> {};
+struct declaration_line : pegtl::seq<pegtl::not_at<command_enddefinitions>, whitespaces, pegtl::must<declaration_command>, mandatory_space> {};
+struct declaration_section : pegtl::seq<pegtl::star<declaration_line>, pegtl::must<command_enddefinitions>, whitespaces> {};
 
 // Complete file structure
-struct vcd_file : pegtl::seq<whitespaces, declaration_section, whitespaces, pegtl::eof> {};
+struct vcd_file : pegtl::seq<whitespaces, declaration_section, whitespaces> {};
 
 // Entry point
-struct grammar : vcd_file {};
+struct grammar : pegtl::must<pegtl::seq<vcd_file, pegtl::eof>> {};
 
 }  // namespace VCDP_NAMESPACE::lexical

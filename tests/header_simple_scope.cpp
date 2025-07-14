@@ -6,6 +6,9 @@
 TEST_CASE("Basic scope section in the header") {
     vcdp::VCDParser parser;
     vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_simple_scope.vcd");
+    for (const auto& error : parser.GetResult().errors) {
+        std::cerr << error << std::endl;
+    }
     REQUIRE(trace != nullptr);
 
     CHECK(trace->GetScopes().size() == 1);

@@ -6,6 +6,9 @@
 TEST_CASE("Ranged var size in the header is inconsistent") {
     vcdp::VCDParser parser;
     auto trace = parser.Parse(TEST_DATA_DIR "header_ranged_var_size_inconsistent.vcd");
+    for (const auto& error : parser.GetResult().errors) {
+        std::cerr << error << std::endl;
+    }
 
     REQUIRE(trace == nullptr);
     CHECK_FALSE(parser.GetResult().success);

@@ -6,6 +6,9 @@
 TEST_CASE("Multi top scopes in the header") {
     vcdp::VCDParser parser;
     vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_multi_topscopes.vcd");
+    for (const auto& error : parser.GetResult().errors) {
+        std::cerr << error << std::endl;
+    }
     REQUIRE(trace != nullptr);
 
     CHECK(trace->GetScopes().size() == 3);

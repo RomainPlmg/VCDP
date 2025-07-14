@@ -6,6 +6,9 @@
 TEST_CASE("Var out of scope in the header") {
     vcdp::VCDParser parser;
     auto trace = parser.Parse(TEST_DATA_DIR "header_var_without_scope.vcd");
+    for (const auto& error : parser.GetResult().errors) {
+        std::cerr << error << std::endl;
+    }
 
     REQUIRE(trace == nullptr);
     CHECK_FALSE(parser.GetResult().success);
