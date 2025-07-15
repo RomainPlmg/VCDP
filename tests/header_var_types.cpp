@@ -1,9 +1,12 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include <doctest/doctest.h>
 
+#include <cstdint>
+#include <array>
+
 #include "vcdp/VCDP.hpp"
 
-const u_int8_t VAR_NB = 17;
+const std::uint8_t VAR_NB = 17;
 constexpr std::array<const vcdp::VCDVarType, VAR_NB> signal_types = {
     vcdp::VCDVarType::VCD_VAR_EVENT,    vcdp::VCDVarType::VCD_VAR_INTEGER, vcdp::VCDVarType::VCD_VAR_PARAMETER, vcdp::VCDVarType::VCD_VAR_REAL,
     vcdp::VCDVarType::VCD_VAR_REALTIME, vcdp::VCDVarType::VCD_VAR_REG,     vcdp::VCDVarType::VCD_VAR_SUPPLY0,   vcdp::VCDVarType::VCD_VAR_SUPPLY1,

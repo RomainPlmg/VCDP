@@ -5,13 +5,26 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    # Désactiver clang-tidy avec MSVC
+# Détection de l'environnement
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    message(STATUS "Compiler : MSVC — Clang-Tidy disable")
     set(CMAKE_CXX_CLANG_TIDY "")
-    message(STATUS "Clang-Tidy disabled with MSVC")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    # Activer seulement avec Clang
-    set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    message(STATUS "Compiler : GCC — Clang-Tidy disable")
+    set(CMAKE_CXX_CLANG_TIDY "")
+
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    if (CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
+        message(STATUS "Compiler : Clang-CL (MSVC) — Clang-Tidy disable")
+        set(CMAKE_CXX_CLANG_TIDY "")
+    else()
+        message(STATUS "Compilateur : Clang POSIX — Clang-Tidy activé")
+        set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+    endif()
+else()
+    message(WARNING "Unknown compiler (${CMAKE_CXX_COMPILER_ID}) — Clang-Tidy disable")
+    set(CMAKE_CXX_CLANG_TIDY "")
 endif()
 
 enable_testing()
