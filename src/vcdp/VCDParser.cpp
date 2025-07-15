@@ -17,7 +17,7 @@ VCDFile* VCDParser::Parse(const std::string& file_path) {
 
     try {
         pegtl::file_input in(file_path);
-        if (!pegtl::parse<lexical::grammar, action>(in, *m_File)) {
+        if (!pegtl::parse<lexical::full_grammar, action>(in, *m_File)) {
             m_Result.success = false;
             m_Result.errors.push_back("Internal parse error...");
         }

@@ -17,8 +17,12 @@ int main(int argc, char const* argv[]) {
     std::string file_path;
     argparse::ArgumentParser program("vcdp", "0.0.1");
     program.add_argument("vcd_file").help("VCD file to parse").store_into(file_path);
-    program.add_argument("-t", "--tree").help("Print the scope & var hierarchy").default_value(false).implicit_value(true);
     program.add_argument("--verbose").help("Increase output verbosity").default_value(false).implicit_value(true);
+    program.add_argument("-t", "--tree").help("Print the scope & var hierarchy").default_value(false).implicit_value(true);
+    program.add_argument("--stats")
+        .help("Print stats: number of scopes, variables, changes, duration, etc.")
+        .default_value(false)
+        .implicit_value(true);
 
     try {
         program.parse_args(argc, argv);
@@ -54,6 +58,14 @@ int main(int argc, char const* argv[]) {
         }
     }
 
+    if (program["--stats"] == true) {
+        std::cout << "Scopes: " << trace->GetScopes().size() << std::endl;
+        std::cout << "Signals: " << trace->GetSignals().size() << std::endl;
+        std::cout << "Timescale: " << trace->time_resolution << vcdp::utils::VCDTimeUnit2String(trace->time_units) << std::endl;
+        std::cout << "Date: " << trace->date << std::endl;
+        std::cout << "Version: " << trace->version << std::endl;
+    }
+
     return 0;
 }
 
@@ -87,7 +99,7 @@ void PrintScope(vcdp::VCDScope* scope, std::vector<bool> last_flags) {
 
         std::cout << vcdp::color::GREEN << signal->reference << vcdp::color::RESET << " : " << vcdp::color::BLUE
                   << vcdp::utils::VCDVarType2String(signal->type) << " " << vcdp::color::RED << bit_index.str() << vcdp::color::RESET << "("
-                  << vcdp::color::YELLOW << "id" << vcdp::color::RESET << " : " << signal->hash << ")" << std::endl;
+                  << vcdp::color::YELLOW << "id" << vcdp::color::RESET << ": " << signal->hash << ")" << std::endl;
     }
 
     // Appel récursif sur les enfants

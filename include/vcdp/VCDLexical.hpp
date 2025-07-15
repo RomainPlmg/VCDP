@@ -16,6 +16,7 @@ struct newline : pegtl::one<'\n', '\r'> {};
 struct whitespace : pegtl::sor<space, newline> {};
 struct whitespaces : pegtl::star<whitespace> {};
 struct mandatory_space : pegtl::plus<whitespace> {};
+struct eof : pegtl::eof {};
 
 // End keyword
 struct kw_end : TAO_PEGTL_STRING("$end") {};
@@ -41,8 +42,21 @@ struct var_name : identifier {};
 // Numbers & values
 struct number : pegtl::plus<pegtl::ascii::digit> {};
 struct decimal_number : pegtl::seq<pegtl::star<pegtl::ascii::digit>, pegtl::opt<pegtl::seq<pegtl::one<'.'>, pegtl::plus<pegtl::ascii::digit>>>> {};
-struct time_number : pegtl::sor<TAO_PEGTL_STRING("1"), TAO_PEGTL_STRING("10"), TAO_PEGTL_STRING("100")> {};
+struct time_number : pegtl::sor<
+    TAO_PEGTL_STRING("1"),
+    TAO_PEGTL_STRING("10"),
+    TAO_PEGTL_STRING("100")
+> {};
 struct var_size : number {};
+struct scalar_value : pegtl::sor<
+    TAO_PEGTL_STRING("0"),
+    TAO_PEGTL_STRING("1"),
+    TAO_PEGTL_STRING("x"),
+    TAO_PEGTL_STRING("X"),
+    TAO_PEGTL_STRING("z"),
+    TAO_PEGTL_STRING("Z")
+> {};
+struct binary_vector : pegtl::plus<scalar_value> {};
 
 // Declaration keywords
 struct dkw_comment : TAO_PEGTL_STRING("$comment") {};
@@ -66,13 +80,15 @@ struct time_unit : pegtl::sor<
     TAO_PEGTL_STRING("us"),
     TAO_PEGTL_STRING("ns"),
     TAO_PEGTL_STRING("ps"),
-    TAO_PEGTL_STRING("fs")> {};
+    TAO_PEGTL_STRING("fs")
+> {};
 struct scope_type : pegtl::sor<
     TAO_PEGTL_STRING("begin"),
     TAO_PEGTL_STRING("fork"),
     TAO_PEGTL_STRING("function"),
     TAO_PEGTL_STRING("module"),
-    TAO_PEGTL_STRING("task")> {};
+    TAO_PEGTL_STRING("task")
+> {};
 struct var_type : pegtl::sor<
     TAO_PEGTL_STRING("event"),
     TAO_PEGTL_STRING("integer"),
@@ -91,7 +107,8 @@ struct var_type : pegtl::sor<
     TAO_PEGTL_STRING("tri"),
     TAO_PEGTL_STRING("wand"),
     TAO_PEGTL_STRING("wire"),
-    TAO_PEGTL_STRING("wor")> {};
+    TAO_PEGTL_STRING("wor")
+> {};
 struct var_end : kw_end {};
 
 // In $var, the [0] or [3:0] for example
@@ -102,7 +119,8 @@ struct bit_index_seq : pegtl::seq<
     whitespaces,
     lsb_index,
     whitespaces,
-    pegtl::one<']'>> {};
+    pegtl::one<']'>
+> {};
 struct bit_range_seq : pegtl::seq<
     pegtl::one<'['>,
     whitespaces,
@@ -112,31 +130,35 @@ struct bit_range_seq : pegtl::seq<
     whitespaces,
     lsb_index,
     whitespaces,
-    pegtl::one<']'>> {};
+    pegtl::one<']'>
+> {};
 struct var_reference : pegtl::seq<
     var_name,
     pegtl::opt<
         pegtl::seq<
             whitespaces,
-            pegtl::sor<bit_index_seq, bit_range_seq>>>> {};
+            pegtl::sor<bit_index_seq, bit_range_seq>>>
+> {};
 
 // Keyword commands
 struct command_comment : pegtl::seq<
     dkw_comment,
     pegtl::opt<pegtl::seq<mandatory_space, pegtl::not_at<kw_end>, text_comment>>,
     pegtl::must<mandatory_space>,
-    pegtl::must<kw_end>> {};
+    pegtl::must<kw_end>
+> {};
 struct command_date : pegtl::seq<
     dkw_date,
     pegtl::must<mandatory_space>,
     pegtl::must<text_date>,
     pegtl::must<mandatory_space>,
-    pegtl::must<kw_end>> {
-};
+    pegtl::must<kw_end>
+> {};
 struct command_enddefinitions : pegtl::seq<
     dkw_enddefinitions,
     pegtl::must<mandatory_space>,
-    pegtl::must<kw_end>> {};
+    pegtl::must<kw_end>
+> {};
 struct command_scope : pegtl::seq<
     dkw_scope,
     pegtl::must<mandatory_space>,
@@ -144,7 +166,8 @@ struct command_scope : pegtl::seq<
     pegtl::must<mandatory_space>,
     pegtl::must<scope_identifier>,
     pegtl::must<mandatory_space>,
-    pegtl::must<kw_end>> {};
+    pegtl::must<kw_end>
+> {};
 struct command_timescale : pegtl::seq<
     dkw_timescale,
     pegtl::must<mandatory_space>,
@@ -152,11 +175,13 @@ struct command_timescale : pegtl::seq<
     whitespaces,
     pegtl::must<time_unit>,
     pegtl::must<mandatory_space>,
-    pegtl::must<kw_end>> {};
+    pegtl::must<kw_end>
+> {};
 struct command_upscope : pegtl::seq<
     dkw_upscope,
     pegtl::must<mandatory_space>,
-    pegtl::must<kw_end>> {};
+    pegtl::must<kw_end>
+> {};
 struct command_var : pegtl::seq<
     dkw_var,
     pegtl::must<mandatory_space>,
@@ -168,13 +193,15 @@ struct command_var : pegtl::seq<
     pegtl::must<mandatory_space>,
     pegtl::must<var_reference>,
     pegtl::must<mandatory_space>,
-    pegtl::must<var_end>> {};
+    pegtl::must<var_end>
+> {};
 struct command_version : pegtl::seq<
     dkw_version,
     pegtl::must<mandatory_space>,
     text_version,
     pegtl::must<mandatory_space>,
-    pegtl::must<kw_end>> {};
+    pegtl::must<kw_end>
+> {};
 
 struct declaration_command : pegtl::sor<
     command_comment,
@@ -183,25 +210,84 @@ struct declaration_command : pegtl::sor<
     command_timescale,
     command_upscope,
     command_var,
-    command_version> {};
+    command_version
+> {};
+
+struct timestamp : pegtl::seq<pegtl::one<'#'>, whitespaces, pegtl::must<number>> {};
+struct scalar_value_change : pegtl::seq<scalar_value, whitespaces, pegtl::must<symbol>> {};
+struct vector_value_change : pegtl::sor<
+    pegtl::seq<pegtl::sor<pegtl::one<'b'>, pegtl::one<'B'>>, pegtl::must<binary_vector>, whitespaces, pegtl::must<symbol>>,
+    pegtl::seq<pegtl::sor<pegtl::one<'r'>, pegtl::one<'R'>>, pegtl::must<decimal_number>, whitespaces, pegtl::must<symbol>>
+> {};
+
+struct command_dumpall : pegtl::seq<
+    skw_dumpall,
+    pegtl::must<mandatory_space>,
+    pegtl::star<pegtl::sor<scalar_value_change, vector_value_change>, pegtl::must<mandatory_space>>,
+    pegtl::must<kw_end>
+> {};
+struct command_dumpoff : pegtl::seq<
+    skw_dumpoff,
+    pegtl::must<mandatory_space>,
+    pegtl::star<pegtl::sor<scalar_value_change, vector_value_change>, pegtl::must<mandatory_space>>,
+    pegtl::must<kw_end>
+> {};
+struct command_dumpon : pegtl::seq<
+    skw_dumpon,
+    pegtl::must<mandatory_space>,
+    pegtl::star<pegtl::sor<scalar_value_change, vector_value_change>, pegtl::must<mandatory_space>>,
+    pegtl::must<kw_end>
+> {};
+struct command_dumpvars : pegtl::seq<
+    skw_dumpvars,
+    pegtl::must<mandatory_space>,
+    pegtl::star<pegtl::sor<scalar_value_change, vector_value_change>, pegtl::must<mandatory_space>>,
+    pegtl::must<kw_end>
+> {};
+
+struct simulation_command : pegtl::sor<
+    timestamp,
+    scalar_value_change,
+    vector_value_change,
+    command_dumpall,
+    command_dumpoff,
+    command_dumpon,
+    command_dumpvars
+> {};
+
 
 // Sections
 struct declaration_line : pegtl::seq<
     whitespaces,
     pegtl::not_at<command_enddefinitions>,
     pegtl::must<declaration_command>,
-    pegtl::must<mandatory_space>> {};
-
+    pegtl::must<mandatory_space>
+> {};
 struct declaration_section : pegtl::seq<
+    whitespaces,
     pegtl::star<declaration_line>,
     pegtl::must<command_enddefinitions>,
-    whitespaces> {};
+    whitespaces
+> {};
+
+struct simulation_line : pegtl::seq<
+    whitespaces,
+    pegtl::not_at<eof>,
+    pegtl::must<simulation_command>,
+    whitespaces
+> {};
+struct simulation_section : pegtl::seq<
+    whitespaces,
+    pegtl::star<simulation_line>,
+    whitespaces
+> {};
 
 // Complete file structure
-struct vcd_file : pegtl::seq<whitespaces, declaration_section, whitespaces> {};
+struct vcd_file : pegtl::seq<pegtl::must<declaration_section>, pegtl::must<simulation_section>> {};
 
 // Entry point
-struct grammar : pegtl::must<pegtl::seq<vcd_file, pegtl::eof>> {};
+struct grammar : pegtl::seq<vcd_file, eof> {};
+struct full_grammar : pegtl::must<grammar> {};
 
 // clang-format on
 

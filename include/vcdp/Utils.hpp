@@ -30,6 +30,20 @@ std::string VCDVarType2String(VCDVarType type) {
         default:                            return "invalid";
     }
 }
+
+std::string VCDTimeUnit2String(VCDTimeUnit unit) {
+    switch (unit)
+    {
+    case VCDTimeUnit::TIME_UNKNOWN: return "unknown";
+    case VCDTimeUnit::TIME_S:       return "s";
+    case VCDTimeUnit::TIME_MS:      return "ms";
+    case VCDTimeUnit::TIME_US:      return "us";
+    case VCDTimeUnit::TIME_NS:      return "ns";
+    case VCDTimeUnit::TIME_PS:      return "ps";
+    case VCDTimeUnit::TIME_FS:      return "fs";
+    default:                        return "invalid";
+    }
+}
 // clang-format on
 
 }  // namespace VCDP_NAMESPACE::utils
