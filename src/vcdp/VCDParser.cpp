@@ -24,7 +24,7 @@ VCDFile* VCDParser::Parse(const std::string& file_path) {
 
     } catch (const VCDValidationError& e) {
         m_Result.success = false;
-        m_Result.errors.emplace_back(e.what());
+        m_Result.errors.push_back("Parse error: " + std::string(e.what()));
     } catch (const tao::pegtl::parse_error& e) {
         m_Result.success = false;
         m_Result.errors.push_back("Parse error: " + std::string(e.what()));

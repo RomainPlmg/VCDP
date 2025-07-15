@@ -4,3 +4,6 @@
 [submodule "libs/doctest"]
 	path = libs/doctest
 	url = https://github.com/doctest/doctest.git
+[submodule "libs/argparse"]
+	path = libs/argparse
+	url = https://github.com/p-ranav/argparse.git

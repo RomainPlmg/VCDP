@@ -13,6 +13,8 @@ set(test_sources
         "header_simple_scope.cpp"
         "header_nested_scopes.cpp"
         "header_multi_topscopes.cpp"
+        "header_missing_scope.cpp"
+        "header_missing_upscope.cpp"
         "header_simple_var.cpp"
         "header_indexed_var.cpp"
         "header_ranged_var.cpp"
@@ -34,7 +36,7 @@ foreach (test_source_file ${test_sources})
 
     get_filename_component(exe_name vcdp-test-${test_source_file} NAME_WE)
     add_executable(${exe_name} ${test_source_file})
-    target_link_libraries(${exe_name} PRIVATE vcdp doctest)
+    target_link_libraries(${exe_name} PRIVATE vcdplib doctest)
     set_target_properties(${exe_name} PROPERTIES
             CXX_STANDARD 17
             CXX_STANDARD_REQUIRED ON

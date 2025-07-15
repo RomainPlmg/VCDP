@@ -1,0 +1,32 @@
+$date
+	Tue Jul  8 15:36:41 2025
+$end
+$version
+	QuestaSim Version 2024.2
+$end
+$timescale
+	1ns
+$end
+
+$scope module tb_counter $end
+$var wire 1 ! clk $end
+$var wire 1 " reset_n $end
+$var wire 1 # data [3] $end
+$var wire 1 $ data [2] $end
+$var wire 1 % data [1] $end
+$var wire 1 & data [0] $end
+
+$scope module uut $end
+$var wire 1 ! clk $end
+$var wire 1 " reset_n $end
+$var wire 1 # data [3] $end
+$var wire 1 $ data [2] $end
+$var wire 1 % data [1] $end
+$var wire 1 & data [0] $end
+$var wire 1 ' out_reg [3] $end
+$var wire 1 ( out_reg [2] $end
+$var wire 1 ) out_reg [1] $end
+$var wire 1 * out_reg [0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end

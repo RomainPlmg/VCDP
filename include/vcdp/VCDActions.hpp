@@ -5,6 +5,7 @@
 #include "Config.hpp"
 #include "VCDFile.hpp"
 #include "VCDLexical.hpp"
+#include "VCDValidationError.hpp"
 
 namespace VCDP_NAMESPACE {
 
@@ -125,7 +126,10 @@ template <>
 struct action<lexical::command_upscope> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
-        if (file.current_scope != nullptr) file.current_scope = file.current_scope->parent;
+        if (file.current_scope != nullptr)
+            file.current_scope = file.current_scope->parent;
+        else
+            throw VCDValidationError("$scope declaration expected");
     }
 };
 
@@ -227,6 +231,15 @@ struct action<lexical::var_end> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
         file.AddSignal();
+    }
+};
+
+/// @brief Final header check
+template <>
+struct action<lexical::command_enddefinitions> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        if (file.current_scope != nullptr) throw VCDValidationError("$upscope declaration expected");
     }
 };
 

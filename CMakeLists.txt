@@ -31,17 +31,25 @@ enable_testing()
 
 add_subdirectory(libs/pegtl)
 add_subdirectory(libs/doctest)
+add_subdirectory(libs/argparse)
 
 file(GLOB_RECURSE SRC_FILES
         src/*.hpp
-        src/*.cpp
+        src/vcdp/*.cpp
 )
 
 option(BUILD_STATIC_LIB "Build as a static library instead of header-only" OFF)
 
-add_library(vcdp STATIC ${SRC_FILES})
+add_library(vcdplib STATIC ${SRC_FILES})
 
-target_link_libraries(vcdp PUBLIC pegtl)
-target_include_directories(vcdp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(vcdplib PUBLIC pegtl)
+target_include_directories(vcdplib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_subdirectory(tests)
+
+# Creating standalone executable
+add_executable(vcdp src/main.cpp)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(vcdp PRIVATE -fexec-charset=UTF-8)
+endif()
+target_link_libraries(vcdp PUBLIC vcdplib argparse)

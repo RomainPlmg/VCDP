@@ -126,7 +126,7 @@ class VCDFile {
     /// @brief Version string of the simulator which generated the VCD.
     std::string version;
 
-    /// @brief Version string of the simulator which generated the VCD.
+    /// @brief Comment string of the simulator which generated the VCD.
     std::string comment;
 
     /// @brief The current scope build by the parser
@@ -135,7 +135,7 @@ class VCDFile {
     /// @brief The current signal build by the parser
     VCDSignalBuilder current_signal_builder;
 
-    /// @brief current scope nodes of the VCD signals -> To manage parents & children
+    /// @brief Current scope nodes of the VCD signals -> To manage parents & children
     VCDScope* current_scope = nullptr;
 
    private:
