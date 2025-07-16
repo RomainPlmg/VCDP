@@ -95,7 +95,7 @@ void PrintScope(vcdp::VCDScope* scope, std::vector<bool> last_flags) {
         else if (signal->rindex > -1)
             bit_index << "[" << signal->rindex << "] ";
         else
-            bit_index << " ";
+            bit_index << "";
 
         std::cout << vcdp::color::GREEN << signal->reference << vcdp::color::RESET << " : " << vcdp::color::BLUE
                   << vcdp::utils::VCDVarType2String(signal->type) << " " << vcdp::color::RED << bit_index.str() << vcdp::color::RESET << "("

@@ -14,13 +14,22 @@ namespace VCDP_NAMESPACE {
 struct VCDScopeBuilder {
     VCDScopeName name;
     VCDScopeType type = VCDScopeType::VCD_SCOPE_UNKNOWN;
+
     [[nodiscard]] bool IsComplete() const { return !name.empty() && type != VCDScopeType::VCD_SCOPE_UNKNOWN; }
 
-    std::unique_ptr<VCDScope> Build(VCDScope* parent) const {
+    void Reset() {
+        name.clear();
+        type = VCDScopeType::VCD_SCOPE_UNKNOWN;
+    }
+
+    std::unique_ptr<VCDScope> Build(VCDScope* parent) {
         auto scope = std::make_unique<VCDScope>();
         scope->name = name;
         scope->type = type;
         scope->parent = parent;
+
+        Reset();
+
         return scope;
     }
 };
@@ -32,9 +41,19 @@ struct VCDSignalBuilder {
     VCDVarType type = VCDVarType::VCD_VAR_UNKNOWN;
     int lindex = -1;
     int rindex = -1;
-    bool IsComplete() const { return !hash.empty() && !reference.empty() && size > 0 && type != VCDVarType::VCD_VAR_UNKNOWN; }
 
-    std::unique_ptr<VCDSignal> Build(VCDScope* scope) const {
+    [[nodiscard]] bool IsComplete() const { return !hash.empty() && !reference.empty() && size > 0 && type != VCDVarType::VCD_VAR_UNKNOWN; }
+
+    void Reset() {
+        hash.clear();
+        reference.clear();
+        size = 0;
+        type = VCDVarType::VCD_VAR_UNKNOWN;
+        lindex = -1;
+        rindex = -1;
+    }
+
+    std::unique_ptr<VCDSignal> Build(VCDScope* scope) {
         auto signal = std::make_unique<VCDSignal>();
         signal->hash = hash;
         signal->reference = reference;
@@ -43,6 +62,9 @@ struct VCDSignalBuilder {
         signal->lindex = lindex;
         signal->rindex = rindex;
         signal->scope = scope;
+
+        Reset();
+
         return signal;
     }
 };
@@ -59,27 +81,27 @@ class VCDFile {
      * @brief Add a new scope object to the VCD file.
      * @param p_scope The VCDScope object to add to the VCD file.
      */
-    void AddScope();
+    void AddScope(std::unique_ptr<VCDScope>& scope);
 
     /**
      * @brief Add a new signal to the VCD file.
      * @param p_signal The VCDSignal object to add to the VCD file.
      */
-    void AddSignal();
+    void AddSignal(std::unique_ptr<VCDSignal>& signal);
 
     /**
      * @brief Add a new timestamp value to the VCD file.
      * @details Add a time stamp to the sorted array of existing timestamps in the file.
      * @param time The timestamp value to add to the file.
      */
-    void AddTimestamp(const VCDTime time) { m_Times.push_back(time); }
+    void AddTimestamp(const VCDTime time);
 
     /**
      * @brief Add a new signal value to the VCD file, tagged by time.
      * @param p_time_val A signal value, tagged by the time it occurs.
      * @param hash The VCD hash value representing the signal.
      */
-    void AddSignalValue(VCDTimedValue* p_time_val, const VCDSignalHash& hash) { m_ValMap[hash]->push_back(p_time_val); }
+    void AddSignalValue(VCDTimedValue* p_time_val, const VCDSignalHash& hash);
 
     /**
      * @brief Return the scope object in the VCD file with this name.
@@ -134,6 +156,9 @@ class VCDFile {
 
     /// @brief The current signal build by the parser
     VCDSignalBuilder current_signal_builder;
+
+    /// @brief Current simulation time
+    VCDTime current_time = 0.0;
 
     /// @brief Current scope nodes of the VCD signals -> To manage parents & children
     VCDScope* current_scope = nullptr;

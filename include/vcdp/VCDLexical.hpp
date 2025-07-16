@@ -213,7 +213,8 @@ struct declaration_command : pegtl::sor<
     command_version
 > {};
 
-struct timestamp : pegtl::seq<pegtl::one<'#'>, whitespaces, pegtl::must<number>> {};
+struct timestamp_number : number {};
+struct timestamp : pegtl::seq<pegtl::one<'#'>, whitespaces, pegtl::must<timestamp_number>> {};
 struct scalar_value_change : pegtl::seq<scalar_value, whitespaces, pegtl::must<symbol>> {};
 struct vector_value_change : pegtl::sor<
     pegtl::seq<pegtl::sor<pegtl::one<'b'>, pegtl::one<'B'>>, pegtl::must<binary_vector>, whitespaces, pegtl::must<symbol>>,

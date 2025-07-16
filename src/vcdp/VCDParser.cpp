@@ -5,7 +5,6 @@
 
 #include "vcdp/VCDActions.hpp"
 #include "vcdp/VCDLexical.hpp"
-#include "vcdp/VCDValidationError.hpp"
 
 namespace VCDP_NAMESPACE {
 
@@ -21,11 +20,7 @@ VCDFile* VCDParser::Parse(const std::string& file_path) {
             m_Result.success = false;
             m_Result.errors.push_back("Internal parse error...");
         }
-
-    } catch (const VCDValidationError& e) {
-        m_Result.success = false;
-        m_Result.errors.push_back("Parse error: " + std::string(e.what()));
-    } catch (const tao::pegtl::parse_error& e) {
+    } catch (const pegtl::parse_error& e) {
         m_Result.success = false;
         m_Result.errors.push_back("Parse error: " + std::string(e.what()));
     }

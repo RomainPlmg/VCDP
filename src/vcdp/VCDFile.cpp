@@ -1,6 +1,6 @@
 #include "vcdp/VCDFile.hpp"
 
-#include "vcdp/VCDCheckers.hpp"
+#include "vcdp/VCDFile.hpp"
 #include "vcdp/VCDTypes.hpp"
 
 namespace VCDP_NAMESPACE {
@@ -16,22 +16,15 @@ VCDFile::~VCDFile() {
     }
 }
 
-void VCDFile::AddScope() {
-    if (current_scope_builder.IsComplete()) {
-        auto scope = current_scope_builder.Build(current_scope);
-        VCDScope* child_scope = scope.get();
+void VCDFile::AddScope(std::unique_ptr<VCDScope>& scope) {
+        VCDScope* p_scope = scope.get();
         m_Scopes.push_back(std::move(scope));
-        if (current_scope != nullptr) current_scope->children.push_back(child_scope);
-        current_scope = child_scope;
-        current_scope_builder = VCDScopeBuilder{};  // Reset
-    }
+        if (current_scope != nullptr) current_scope->children.push_back(p_scope);
+        current_scope = p_scope;
 }
 
-void VCDFile::AddSignal() {
-    if (current_signal_builder.IsComplete()) {
-        auto signal = current_signal_builder.Build(current_scope);
+void VCDFile::AddSignal(std::unique_ptr<VCDSignal>& signal) {
         VCDSignal* p_signal = signal.get();
-        checkers::ValidateVCDSignal(*p_signal);
         m_Signals.push_back(std::move(signal));
         current_scope->signals.push_back(p_signal);
 
@@ -40,10 +33,9 @@ void VCDFile::AddSignal() {
             // Value will be populated later
             m_ValMap[p_signal->hash] = new VCDSignalValues();
         }
-
-        current_signal_builder = VCDSignalBuilder{};  // Reset
-    }
 }
+
+void VCDFile::AddTimestamp(const VCDTime time) { m_Times.push_back(time); }
 
 VCDScope* VCDFile::GetScope(const VCDScopeName& name) const {
     for (const auto& scope : m_Scopes) {
@@ -51,6 +43,8 @@ VCDScope* VCDFile::GetScope(const VCDScopeName& name) const {
     }
     return nullptr;
 }
+
+void VCDFile::AddSignalValue(VCDTimedValue* p_time_val, const VCDSignalHash& hash) { m_ValMap[hash]->push_back(p_time_val); }
 
 VCDValue* VCDFile::GetSignalValue(const VCDSignalHash& hash, const VCDTime time, bool erase_prior) {
     const auto it = m_ValMap.find(hash);

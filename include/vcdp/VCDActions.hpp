@@ -5,7 +5,6 @@
 #include "Config.hpp"
 #include "VCDFile.hpp"
 #include "VCDLexical.hpp"
-#include "VCDValidationError.hpp"
 
 namespace VCDP_NAMESPACE {
 
@@ -117,7 +116,10 @@ struct action<lexical::scope_identifier> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
         file.current_scope_builder.name = in.string();
-        file.AddScope();
+        if (file.current_scope_builder.IsComplete()) {
+            auto scope = file.current_scope_builder.Build(file.current_scope);
+            file.AddScope(scope);
+        }
     }
 };
 
@@ -126,10 +128,11 @@ template <>
 struct action<lexical::command_upscope> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
-        if (file.current_scope != nullptr)
+        if (file.current_scope != nullptr) {
             file.current_scope = file.current_scope->parent;
-        else
-            throw VCDValidationError("$scope declaration expected");
+        } else {
+            throw pegtl::parse_error("$scope declaration expected", in);
+        }
     }
 };
 
@@ -230,7 +233,36 @@ template <>
 struct action<lexical::var_end> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
-        file.AddSignal();
+        if (file.current_signal_builder.IsComplete()) {
+            auto signal = file.current_signal_builder.Build(file.current_scope);
+            if (signal->scope == nullptr) {
+                std::ostringstream msg;
+                msg << "Signal \'" << signal->reference << "\' needs to be part of a scope";
+                throw pegtl::parse_error(msg.str(), in);
+            }
+
+            if (signal->rindex != -1) {
+                if (signal->lindex != -1) {
+                    // Range size exception
+                    int range_size = std::abs(signal->lindex - signal->rindex) + 1;
+                    if (range_size != signal->size) {
+                        std::ostringstream msg;
+                        msg << "Range size mismatch for signal '" << signal->reference << "': range [" << signal->lindex << ":" << signal->rindex
+                            << "] implies size " << range_size << " but declared size is " << signal->size;
+                        throw pegtl::parse_error(msg.str(), in);
+                    }
+                } else {
+                    // Single index exception
+                    if (signal->size != 1) {
+                        std::ostringstream msg;
+                        msg << "Size mismatch for signal '" << signal->reference << "': index [" << signal->rindex
+                            << "] implies size 1 but declared size is " << signal->size;
+                        throw pegtl::parse_error(msg.str(), in);
+                    }
+                }
+            }
+            file.AddSignal(signal);
+        }
     }
 };
 
@@ -239,7 +271,22 @@ template <>
 struct action<lexical::command_enddefinitions> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
-        if (file.current_scope != nullptr) throw VCDValidationError("$upscope declaration expected");
+        if (file.current_scope != nullptr) {
+            throw pegtl::parse_error("$upscope declaration expected.", in);
+        }
+    }
+};
+
+/// @brief On time change
+template <>
+struct action<lexical::timestamp_number> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        double time = std::stoi(in.string());
+        if (time < file.current_time) {
+            throw pegtl::parse_error("The current timestamp cannot be less than the previous one.", in);
+        }
+        file.current_time = time;
     }
 };
 
