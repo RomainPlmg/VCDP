@@ -94,7 +94,7 @@ class VCDFile {
      * @details Add a time stamp to the sorted array of existing timestamps in the file.
      * @param time The timestamp value to add to the file.
      */
-    void AddTimestamp(const VCDTime time);
+    void AddTimestamp(VCDTime time);
 
     /**
      * @brief Add a new signal value to the VCD file, tagged by time.
@@ -158,10 +158,13 @@ class VCDFile {
     VCDSignalBuilder current_signal_builder;
 
     /// @brief Current simulation time
-    VCDTime current_time = 0.0;
+    VCDTime current_time = -1.0;
 
     /// @brief Current scope nodes of the VCD signals -> To manage parents & children
     VCDScope* current_scope = nullptr;
+
+    /// @brief Parsing the header or not
+    bool in_header = true;
 
    private:
     std::vector<std::unique_ptr<VCDSignal>> m_Signals;

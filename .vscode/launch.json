@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug SST",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/Debug/vcdp.exe",
+            "args": [
+                "--tree",
+                "${input:vcd_path}"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "externalConsole": true,
+            "MIMode": "gdb"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "vcd_path",
+            "type": "promptString",
+            "description": "Path to VCD to parse",
+            "default": "${workspaceFolder}/tests/data/ghdl_counter.vcd"
+        }
+    ]
+}

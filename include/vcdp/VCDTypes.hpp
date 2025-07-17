@@ -34,10 +34,15 @@ using VCDSignalSize = uint32_t;
 
 /// @brief Represents the four-state signal values of a VCD file.
 enum class VCDBit {
-    VCD_0 = 0,  //!< Logic zero
-    VCD_1 = 1,  //!< Logic one
-    VCD_X = 2,  //!< Unknown / Undefined
-    VCD_Z = 3   //!< High Impedance.
+    VCD_0 = 0,   //!< Logic zero
+    VCD_1 = 1,   //!< Logic one
+    VCD_X = 2,   //!< Unknown
+    VCD_Z = 3,   //!< High Impedance.
+    VCD_U = 4,   //!< Uninitialized.
+    VCD_W = 5,   //!< Weak unknown.
+    VCD_L = 6,   //!< Weak 0.
+    VCD_H = 7,   //!< Weak 1.
+    VCD_DC = 8,  //!< Don't care.
 };
 
 /// @brief A vector of VCDBit values.

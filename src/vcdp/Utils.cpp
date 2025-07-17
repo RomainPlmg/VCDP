@@ -39,6 +39,42 @@ std::string VCDTimeUnit2String(VCDTimeUnit unit) {
     default:                        return "invalid";
     }
 }
+
+char VCDBit2Char(const VCDBit bit) {
+    switch (bit) {
+        case VCDBit::VCD_0  :   return '0';
+        case VCDBit::VCD_1  :   return '1';
+        case VCDBit::VCD_Z  :   return 'Z';
+        case VCDBit::VCD_X  :   return 'X';
+        case VCDBit::VCD_U  :   return 'U';
+        case VCDBit::VCD_W  :   return 'W';
+        case VCDBit::VCD_L  :   return 'L';
+        case VCDBit::VCD_H  :   return 'H';
+        case VCDBit::VCD_DC :   return '-';
+        default:                return '?';
+    }
+}
+
+VCDBit Char2VCDBit(char bit) {
+    switch (bit) {
+        case '0':   return VCDBit::VCD_0;
+        case '1':   return VCDBit::VCD_1;
+        case 'x':   return VCDBit::VCD_X;
+        case 'X':   return VCDBit::VCD_X;
+        case 'z':   return VCDBit::VCD_Z;
+        case 'Z':   return VCDBit::VCD_Z;
+        case 'u':   return VCDBit::VCD_U;
+        case 'U':   return VCDBit::VCD_U;
+        case 'w':   return VCDBit::VCD_W;
+        case 'W':   return VCDBit::VCD_W;
+        case 'l':   return VCDBit::VCD_L;
+        case 'L':   return VCDBit::VCD_L;
+        case 'h':   return VCDBit::VCD_H;
+        case 'H':   return VCDBit::VCD_H;
+        case '-':   return VCDBit::VCD_DC;
+        default:    return VCDBit::VCD_X;
+    }
+}
 // clang-format on
 
 }  // namespace VCDP_NAMESPACE::utils

@@ -12,9 +12,6 @@ namespace VCDP_NAMESPACE {
 
 class VCDValue {
    public:
-    /// @brief Convert a VCDBit to a single char
-    static char VCDBit2Char(VCDBit bit);
-
     /// @brief Create a new VCDValue with the type VCD_SCALAR
     explicit VCDValue(VCDBit data) : m_Type(VCDValueType::VCD_SCALAR), m_Data(data) {}
 

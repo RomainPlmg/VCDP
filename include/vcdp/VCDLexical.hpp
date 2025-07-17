@@ -35,13 +35,20 @@ struct identifier : pegtl::seq<pegtl::ranges<'a', 'z', 'A', 'Z', '_'>, pegtl::st
 struct symbol_char : pegtl::ranges<'!', '~'> {};
 struct symbol : pegtl::plus<symbol_char> {};
 
-struct scope_identifier : identifier {};
+struct scope_identifier : pegtl::seq<pegtl::ranges<'a', 'z', 'A', 'Z', '_'>, pegtl::star<pegtl::sor<identifier_char, pegtl::one<'('>, pegtl::one<')'>>>> {};
 struct var_identifier : symbol {};
 struct var_name : identifier {};
 
 // Numbers & values
 struct number : pegtl::plus<pegtl::ascii::digit> {};
 struct decimal_number : pegtl::seq<pegtl::star<pegtl::ascii::digit>, pegtl::opt<pegtl::seq<pegtl::one<'.'>, pegtl::plus<pegtl::ascii::digit>>>> {};
+struct real_number : pegtl::seq<
+    pegtl::opt<pegtl::one<'-'>>,
+    pegtl::must<decimal_number>,
+    pegtl::opt<pegtl::seq<
+        pegtl::sor<pegtl::one<'e'>, pegtl::one<'E'>>,
+        number>>
+> {};
 struct time_number : pegtl::sor<
     TAO_PEGTL_STRING("1"),
     TAO_PEGTL_STRING("10"),
@@ -54,7 +61,16 @@ struct scalar_value : pegtl::sor<
     TAO_PEGTL_STRING("x"),
     TAO_PEGTL_STRING("X"),
     TAO_PEGTL_STRING("z"),
-    TAO_PEGTL_STRING("Z")
+    TAO_PEGTL_STRING("Z"),
+    TAO_PEGTL_STRING("u"),
+    TAO_PEGTL_STRING("U"),
+    TAO_PEGTL_STRING("w"),
+    TAO_PEGTL_STRING("W"),
+    TAO_PEGTL_STRING("l"),
+    TAO_PEGTL_STRING("L"),
+    TAO_PEGTL_STRING("h"),
+    TAO_PEGTL_STRING("H"),
+    TAO_PEGTL_STRING("-")
 > {};
 struct binary_vector : pegtl::plus<scalar_value> {};
 
@@ -109,6 +125,8 @@ struct var_type : pegtl::sor<
     TAO_PEGTL_STRING("wire"),
     TAO_PEGTL_STRING("wor")
 > {};
+
+struct scope_end : kw_end {};
 struct var_end : kw_end {};
 
 // In $var, the [0] or [3:0] for example
@@ -166,7 +184,7 @@ struct command_scope : pegtl::seq<
     pegtl::must<mandatory_space>,
     pegtl::must<scope_identifier>,
     pegtl::must<mandatory_space>,
-    pegtl::must<kw_end>
+    pegtl::must<scope_end>
 > {};
 struct command_timescale : pegtl::seq<
     dkw_timescale,
@@ -214,11 +232,11 @@ struct declaration_command : pegtl::sor<
 > {};
 
 struct timestamp_number : number {};
-struct timestamp : pegtl::seq<pegtl::one<'#'>, whitespaces, pegtl::must<timestamp_number>> {};
-struct scalar_value_change : pegtl::seq<scalar_value, whitespaces, pegtl::must<symbol>> {};
+struct timestamp : pegtl::seq<pegtl::one<'#'>, pegtl::must<timestamp_number>> {};
+struct scalar_value_change : pegtl::seq<scalar_value, whitespaces, pegtl::must<var_identifier>> {};
 struct vector_value_change : pegtl::sor<
-    pegtl::seq<pegtl::sor<pegtl::one<'b'>, pegtl::one<'B'>>, pegtl::must<binary_vector>, whitespaces, pegtl::must<symbol>>,
-    pegtl::seq<pegtl::sor<pegtl::one<'r'>, pegtl::one<'R'>>, pegtl::must<decimal_number>, whitespaces, pegtl::must<symbol>>
+    pegtl::seq<pegtl::sor<pegtl::one<'b'>, pegtl::one<'B'>>, pegtl::must<binary_vector>, whitespaces, pegtl::must<var_identifier>>,
+    pegtl::seq<pegtl::sor<pegtl::one<'r'>, pegtl::one<'R'>>, pegtl::must<real_number>, whitespaces, pegtl::must<var_identifier>>
 > {};
 
 struct command_dumpall : pegtl::seq<

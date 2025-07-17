@@ -1,6 +1,5 @@
 #include "vcdp/VCDFile.hpp"
 
-#include "vcdp/VCDFile.hpp"
 #include "vcdp/VCDTypes.hpp"
 
 namespace VCDP_NAMESPACE {

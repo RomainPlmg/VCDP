@@ -5,10 +5,17 @@
 
 namespace VCDP_NAMESPACE::utils {
 
-
+/// @brief Convert a VCDVarType to a string
 std::string VCDVarType2String(VCDVarType type);
 
+/// @brief Convert a VCDTimeUnit to a string
 std::string VCDTimeUnit2String(VCDTimeUnit unit);
+
+/// @brief Convert a VCDBit to a single char
+char VCDBit2Char(VCDBit bit);
+
+/// @brief Convert a a single char to VCDBit
+VCDBit Char2VCDBit(char bit);
 
 }  // namespace VCDP_NAMESPACE::utils
 

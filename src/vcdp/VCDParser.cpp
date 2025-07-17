@@ -1,6 +1,5 @@
 #include "vcdp/VCDParser.hpp"
 
-#include <iostream>
 #include <tao/pegtl/contrib/trace.hpp>
 
 #include "vcdp/VCDActions.hpp"
@@ -18,11 +17,11 @@ VCDFile* VCDParser::Parse(const std::string& file_path) {
         pegtl::file_input in(file_path);
         if (!pegtl::parse<lexical::full_grammar, action>(in, *m_File)) {
             m_Result.success = false;
-            m_Result.errors.push_back("Internal parse error...");
+            m_Result.errors.emplace_back("Internal parse error...");
         }
     } catch (const pegtl::parse_error& e) {
         m_Result.success = false;
-        m_Result.errors.push_back("Parse error: " + std::string(e.what()));
+        m_Result.errors.emplace_back("Parse error: " + std::string(e.what()));
     }
 
     if (!m_Result.success) {

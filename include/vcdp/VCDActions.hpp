@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Config.hpp"
+#include "Utils.hpp"
 #include "VCDFile.hpp"
 #include "VCDLexical.hpp"
 
@@ -116,6 +117,14 @@ struct action<lexical::scope_identifier> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
         file.current_scope_builder.name = in.string();
+    }
+};
+
+/// @brief Save the created scope
+template <>
+struct action<lexical::scope_end> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
         if (file.current_scope_builder.IsComplete()) {
             auto scope = file.current_scope_builder.Build(file.current_scope);
             file.AddScope(scope);
@@ -197,7 +206,16 @@ template <>
 struct action<lexical::var_identifier> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
-        file.current_signal_builder.hash = in.string();
+        std::string hash = in.string();
+        if (file.in_header) {
+            file.current_signal_builder.hash = hash;
+        } else {
+            if (file.GetSignalValues(hash) == nullptr) {
+                std::ostringstream msg;
+                msg << "Unknown hash \'" << hash << "\'.";
+                throw pegtl::parse_error(msg.str(), in);
+            }
+        }
     }
 };
 
@@ -274,6 +292,37 @@ struct action<lexical::command_enddefinitions> {
         if (file.current_scope != nullptr) {
             throw pegtl::parse_error("$upscope declaration expected.", in);
         }
+        file.in_header = false;
+    }
+};
+
+/// @brief On dumpvars keyword
+template <>
+struct action<lexical::skw_dumpvars> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        if (file.current_time < 0.0) {
+            file.current_time = 0.0;
+            file.AddTimestamp(file.current_time);
+        }
+    }
+};
+
+/// @brief On dumpvars keyword
+template <>
+struct action<lexical::scalar_value_change> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        if (file.current_time < 0.0) {
+            throw pegtl::parse_error("Timestamp not initialized. Use \'#0\' or \'$dump...\' keywords", in);
+        }
+        const std::string& s = in.string();
+        VCDBit bit = utils::Char2VCDBit(s[0]);
+        std::string hash = s.substr(1);
+
+
+        VCDTimedValue timed_value = {file.current_time, new VCDValue(bit)};
+        file.AddSignalValue(new VCDTimedValue(timed_value), hash);
     }
 };
 
@@ -282,11 +331,15 @@ template <>
 struct action<lexical::timestamp_number> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
-        double time = std::stoi(in.string());
+        double time = std::stod(in.string());
         if (time < file.current_time) {
-            throw pegtl::parse_error("The current timestamp cannot be less than the previous one.", in);
+            std::ostringstream msg;
+            msg << "The current timestamp cannot be less than the previous one. New: " << time << vcdp::utils::VCDTimeUnit2String(file.time_units)
+                << " | Previous: " << file.current_time << vcdp::utils::VCDTimeUnit2String(file.time_units);
+            throw pegtl::parse_error(msg.str(), in);
         }
         file.current_time = time;
+        file.AddTimestamp(file.current_time);
     }
 };
 

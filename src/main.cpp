@@ -6,7 +6,10 @@
 
 #include "vcdp/VCDP.hpp"
 
+constexpr std::string SECTION_SEPARATOR = "\n\n";
+
 void PrintScope(vcdp::VCDScope* scope, std::vector<bool> last_flags);
+void PrintSectionBanner(const std::string& title);
 
 int main(int argc, char const* argv[]) {
     // Enable UTF-8 encoding for Windows
@@ -47,6 +50,7 @@ int main(int argc, char const* argv[]) {
     }
 
     if (program["--tree"] == true) {
+        PrintSectionBanner("VCD SST");
         std::vector<vcdp::VCDScope*> top_scopes;
         for (auto& scope : trace->GetScopes()) {
             // Top scopes
@@ -56,15 +60,24 @@ int main(int argc, char const* argv[]) {
         for (auto& scope : top_scopes) {
             PrintScope(scope, {});
         }
+
+        std::cout << SECTION_SEPARATOR;
     }
 
     if (program["--stats"] == true) {
+        PrintSectionBanner("VCD Stats");
         std::cout << "Scopes: " << trace->GetScopes().size() << std::endl;
         std::cout << "Signals: " << trace->GetSignals().size() << std::endl;
         std::cout << "Timescale: " << trace->time_resolution << vcdp::utils::VCDTimeUnit2String(trace->time_units) << std::endl;
         std::cout << "Date: " << trace->date << std::endl;
         std::cout << "Version: " << trace->version << std::endl;
+        std::cout << SECTION_SEPARATOR;
     }
+
+#ifndef _NDEBUG
+    std::cout << "\n[DEBUG] Press any key to exit...";
+    std::cin.get();
+#endif
 
     return 0;
 }
@@ -102,11 +115,17 @@ void PrintScope(vcdp::VCDScope* scope, std::vector<bool> last_flags) {
                   << vcdp::color::YELLOW << "id" << vcdp::color::RESET << ": " << signal->hash << ")" << std::endl;
     }
 
-    // Appel récursif sur les enfants
+    // Recursive for childs
     for (size_t i = 0; i < scope->children.size(); ++i) {
         bool is_last = (i == scope->children.size() - 1);
         auto new_flags = last_flags;
         new_flags.push_back(is_last);
         PrintScope(scope->children[i], new_flags);
     }
+}
+
+void PrintSectionBanner(const std::string& title) {
+    std::cout << "==========================================\n";
+    std::cout << "[ " << title << " ]\n";
+    std::cout << "------------------------------------------\n";
 }
