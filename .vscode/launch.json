@@ -2,12 +2,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug SST",
+            "name": "Debug VCDP",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/Debug/vcdp.exe",
             "args": [
-                "--tree",
+                "--stats",
                 "${input:vcd_path}"
             ],
             "stopAtEntry": false,

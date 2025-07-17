@@ -24,7 +24,7 @@ using VCDScopeName = std::string;
 using VCDSignalHash = std::string;
 
 /// @brief Represents a single instant in time in a trace
-using VCDTime = double;
+using VCDTime = uint64_t;
 
 /// @brief Specifies the timing resolution along with VCDTimeUnit
 using VCDTimeRes = uint32_t;

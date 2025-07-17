@@ -234,9 +234,22 @@ struct declaration_command : pegtl::sor<
 struct timestamp_number : number {};
 struct timestamp : pegtl::seq<pegtl::one<'#'>, pegtl::must<timestamp_number>> {};
 struct scalar_value_change : pegtl::seq<scalar_value, whitespaces, pegtl::must<var_identifier>> {};
+
+struct binary_vector_prefix : pegtl::sor<pegtl::one<'b'>, pegtl::one<'B'>> {};
+struct real_vector_prefix : pegtl::sor<pegtl::one<'r'>, pegtl::one<'R'>> {};
 struct vector_value_change : pegtl::sor<
-    pegtl::seq<pegtl::sor<pegtl::one<'b'>, pegtl::one<'B'>>, pegtl::must<binary_vector>, whitespaces, pegtl::must<var_identifier>>,
-    pegtl::seq<pegtl::sor<pegtl::one<'r'>, pegtl::one<'R'>>, pegtl::must<real_number>, whitespaces, pegtl::must<var_identifier>>
+    pegtl::seq<
+        binary_vector_prefix,
+        pegtl::must<binary_vector>,
+        whitespaces, 
+        pegtl::must<var_identifier>
+    >,
+    pegtl::seq<
+        real_vector_prefix,
+        pegtl::must<real_number>,
+        whitespaces,
+        pegtl::must<var_identifier>
+    >
 > {};
 
 struct command_dumpall : pegtl::seq<

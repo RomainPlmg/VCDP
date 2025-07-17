@@ -9,6 +9,14 @@
 
 namespace VCDP_NAMESPACE {
 
+static bool in_header = true;
+static VCDTime current_time = 0;
+static bool time_init = false;
+static VCDValueType current_value_type = VCDValueType::VCD_SCALAR;
+static VCDBit current_scalar = VCDBit::VCD_X;
+static VCDBitVector current_bit_vector;
+static VCDReal current_real = 0.0;
+
 inline std::string NormalizeSpaces(const std::string& input) {
     std::istringstream iss(input);
     std::ostringstream oss;
@@ -29,7 +37,6 @@ inline std::string NormalizeSpaces(const std::string& input) {
 template <typename Rule>
 struct action : pegtl::nothing<Rule> {};
 
-/// @brief Capture comment & store it into the VCD file container
 template <>
 struct action<lexical::text_comment> {
     template <typename Input>
@@ -40,7 +47,6 @@ struct action<lexical::text_comment> {
     }
 };
 
-/// @brief Capture date & store it into the VCD file container
 template <>
 struct action<lexical::text_date> {
     template <typename Input>
@@ -49,7 +55,6 @@ struct action<lexical::text_date> {
     }
 };
 
-/// @brief Capture time resolution & store it into the VCD file container
 template <>
 struct action<lexical::time_number> {
     template <typename Input>
@@ -58,7 +63,6 @@ struct action<lexical::time_number> {
     }
 };
 
-/// @brief Capture time unit & store it into the VCD file container
 template <>
 struct action<lexical::time_unit> {
     template <typename Input>
@@ -81,7 +85,6 @@ struct action<lexical::time_unit> {
     }
 };
 
-/// @brief Capture version & store it into the VCD file container
 template <>
 struct action<lexical::text_version> {
     template <typename Input>
@@ -90,7 +93,6 @@ struct action<lexical::text_version> {
     }
 };
 
-/// @brief Capture scope type & store it into the scope builder
 template <>
 struct action<lexical::scope_type> {
     template <typename Input>
@@ -111,7 +113,6 @@ struct action<lexical::scope_type> {
     }
 };
 
-/// @brief Capture scope identifier, store it into the scope builder & build the new scope
 template <>
 struct action<lexical::scope_identifier> {
     template <typename Input>
@@ -120,7 +121,6 @@ struct action<lexical::scope_identifier> {
     }
 };
 
-/// @brief Save the created scope
 template <>
 struct action<lexical::scope_end> {
     template <typename Input>
@@ -132,7 +132,6 @@ struct action<lexical::scope_end> {
     }
 };
 
-/// @brief Reset the current scope to its parent
 template <>
 struct action<lexical::command_upscope> {
     template <typename Input>
@@ -145,7 +144,6 @@ struct action<lexical::command_upscope> {
     }
 };
 
-/// @brief Capture variable type
 template <>
 struct action<lexical::var_type> {
     template <typename Input>
@@ -192,7 +190,6 @@ struct action<lexical::var_type> {
     }
 };
 
-/// @brief Capture variable size
 template <>
 struct action<lexical::var_size> {
     template <typename Input>
@@ -201,25 +198,36 @@ struct action<lexical::var_size> {
     }
 };
 
-/// @brief Capture variable ID
 template <>
 struct action<lexical::var_identifier> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
         std::string hash = in.string();
-        if (file.in_header) {
+        if (in_header) {
             file.current_signal_builder.hash = hash;
         } else {
+            // If signal doesn't exists
             if (file.GetSignalValues(hash) == nullptr) {
                 std::ostringstream msg;
                 msg << "Unknown hash \'" << hash << "\'.";
                 throw pegtl::parse_error(msg.str(), in);
             }
+
+            // Register value change
+            VCDTimedValue timed_value = {};
+            if (current_value_type == VCDValueType::VCD_SCALAR) {
+                timed_value = {current_time, new VCDValue(current_scalar)};
+            } else if (current_value_type == VCDValueType::VCD_VECTOR) {
+                timed_value = {current_time, new VCDValue(current_bit_vector)};
+            } else {
+                timed_value = {current_time, new VCDValue(current_real)};
+            }
+
+            file.AddSignalValue(new VCDTimedValue(timed_value), hash);
         }
     }
 };
 
-/// @brief Capture variable name
 template <>
 struct action<lexical::var_name> {
     template <typename Input>
@@ -228,7 +236,6 @@ struct action<lexical::var_name> {
     }
 };
 
-/// @brief Capture lsb index
 template <>
 struct action<lexical::lsb_index> {
     template <typename Input>
@@ -237,7 +244,6 @@ struct action<lexical::lsb_index> {
     }
 };
 
-/// @brief Capture msb index
 template <>
 struct action<lexical::msb_index> {
     template <typename Input>
@@ -246,7 +252,6 @@ struct action<lexical::msb_index> {
     }
 };
 
-/// @brief Capture single bit range signal
 template <>
 struct action<lexical::var_end> {
     template <typename Input>
@@ -284,7 +289,6 @@ struct action<lexical::var_end> {
     }
 };
 
-/// @brief Final header check
 template <>
 struct action<lexical::command_enddefinitions> {
     template <typename Input>
@@ -292,54 +296,96 @@ struct action<lexical::command_enddefinitions> {
         if (file.current_scope != nullptr) {
             throw pegtl::parse_error("$upscope declaration expected.", in);
         }
-        file.in_header = false;
+        in_header = false;
     }
 };
 
-/// @brief On dumpvars keyword
 template <>
 struct action<lexical::skw_dumpvars> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
-        if (file.current_time < 0.0) {
-            file.current_time = 0.0;
-            file.AddTimestamp(file.current_time);
+        if (!time_init) {
+            time_init = true;
+            file.AddTimestamp(current_time);
         }
     }
 };
 
-/// @brief On dumpvars keyword
 template <>
-struct action<lexical::scalar_value_change> {
+struct action<lexical::scalar_value> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
-        if (file.current_time < 0.0) {
+        if (!time_init) {
             throw pegtl::parse_error("Timestamp not initialized. Use \'#0\' or \'$dump...\' keywords", in);
         }
-        const std::string& s = in.string();
-        VCDBit bit = utils::Char2VCDBit(s[0]);
-        std::string hash = s.substr(1);
 
-
-        VCDTimedValue timed_value = {file.current_time, new VCDValue(bit)};
-        file.AddSignalValue(new VCDTimedValue(timed_value), hash);
+        VCDBit bit = utils::Char2VCDBit(in.string()[0]);
+        if (current_value_type == VCDValueType::VCD_SCALAR) {
+            current_scalar = bit;
+        } else if (current_value_type == VCDValueType::VCD_VECTOR) {
+            current_bit_vector.push_back(bit);
+        }
     }
 };
 
-/// @brief On time change
+template <>
+struct action<lexical::real_number> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        if (!time_init) {
+            throw pegtl::parse_error("Timestamp not initialized. Use \'#0\' or \'$dump...\' keywords", in);
+        }
+
+        if (current_value_type == VCDValueType::VCD_REAL) {
+            current_real = std::stod(in.string());
+        } else {
+            throw pegtl::parse_error("Real number not expected.", in);
+        }
+    }
+};
+
+template <>
+struct action<lexical::binary_vector_prefix> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        current_value_type = VCDValueType::VCD_VECTOR;
+        current_bit_vector.clear();
+    }
+};
+
+template <>
+struct action<lexical::real_vector_prefix> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        current_value_type = VCDValueType::VCD_REAL;
+    }
+};
+
+template <>
+struct action<lexical::vector_value_change> {
+    template <typename Input>
+    static void apply(const Input& in, VCDFile& file) {
+        current_value_type = VCDValueType::VCD_SCALAR;
+    }
+};
+
 template <>
 struct action<lexical::timestamp_number> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file) {
-        double time = std::stod(in.string());
-        if (time < file.current_time) {
+        uint64_t time = std::stoull(in.string());
+        if (time == 0) {
+            time_init = true;
+        }
+
+        if (time < current_time) {
             std::ostringstream msg;
             msg << "The current timestamp cannot be less than the previous one. New: " << time << vcdp::utils::VCDTimeUnit2String(file.time_units)
-                << " | Previous: " << file.current_time << vcdp::utils::VCDTimeUnit2String(file.time_units);
+                << " | Previous: " << current_time << vcdp::utils::VCDTimeUnit2String(file.time_units);
             throw pegtl::parse_error(msg.str(), in);
         }
-        file.current_time = time;
-        file.AddTimestamp(file.current_time);
+        current_time = time;
+        file.AddTimestamp(current_time);
     }
 };
 

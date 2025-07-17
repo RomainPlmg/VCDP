@@ -111,6 +111,13 @@ class VCDFile {
     [[nodiscard]] VCDScope* GetScope(const VCDScopeName& name) const;
 
     /**
+     * @brief Return the signal object in the VCD file with this symbol.
+     * @param hash The symbol of the signal to get and return.
+     * @return A pointer to the signal, or nullptr if signal not found.
+     */
+    [[nodiscard]] VCDSignal* GetSignal(const VCDSignalHash& hash) const;
+
+    /**
      * @brief Get the value of a particular signal at a specified time.
      * @note The supplied time value does not need to exist in the vector returned by GetTimestamps().
      * @param hash The hashcode for the signal to identify it.
@@ -148,7 +155,7 @@ class VCDFile {
     /// @brief Version string of the simulator which generated the VCD.
     std::string version;
 
-    /// @brief Comment string of the simulator which generated the VCD.
+    /// @brief Comment string of the simulator which generated the VCD. -> ONLY USED FOR TEST
     std::string comment;
 
     /// @brief The current scope build by the parser
@@ -157,14 +164,8 @@ class VCDFile {
     /// @brief The current signal build by the parser
     VCDSignalBuilder current_signal_builder;
 
-    /// @brief Current simulation time
-    VCDTime current_time = -1.0;
-
     /// @brief Current scope nodes of the VCD signals -> To manage parents & children
     VCDScope* current_scope = nullptr;
-
-    /// @brief Parsing the header or not
-    bool in_header = true;
 
    private:
     std::vector<std::unique_ptr<VCDSignal>> m_Signals;

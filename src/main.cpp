@@ -1,4 +1,6 @@
 #include <argparse/argparse.hpp>
+#include <atomic>
+#include <csignal>
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -8,10 +10,14 @@
 
 constexpr std::string SECTION_SEPARATOR = "\n\n";
 
+std::atomic_bool stop_requested = false;
+
 void PrintScope(vcdp::VCDScope* scope, std::vector<bool> last_flags);
 void PrintSectionBanner(const std::string& title);
+void signal_callback_handler(int signum);
 
 int main(int argc, char const* argv[]) {
+    std::signal(SIGINT, signal_callback_handler);
     // Enable UTF-8 encoding for Windows
 #ifdef _WIN32
     system("chcp 65001 > nul");
@@ -26,12 +32,13 @@ int main(int argc, char const* argv[]) {
         .help("Print stats: number of scopes, variables, changes, duration, etc.")
         .default_value(false)
         .implicit_value(true);
+    program.add_argument("--symbol").help("Signal name to observe").nargs(1);
 
     try {
         program.parse_args(argc, argv);
     } catch (const std::exception& err) {
-        std::cerr << err.what() << std::endl;
-        std::cerr << program;
+        std::cerr << vcdp::color::RED << err.what() << vcdp::color::RESET << std::endl;
+        std::cerr << vcdp::color::RED << program << vcdp::color::RESET << std::endl;
         return 1;
     }
 
@@ -40,16 +47,16 @@ int main(int argc, char const* argv[]) {
 
     if (program["--verbose"] == true) {
         for (const auto& msg : parser.GetResult().errors) {
-            std::cout << msg << std::endl;
+            std::cerr << vcdp::color::RED << msg << vcdp::color::RESET << std::endl;
         }
     }
 
     if (trace == nullptr) {
-        std::cerr << "Parsing fail" << std::endl;
+        std::cerr << vcdp::color::RED << "Parsing fail" << vcdp::color::RESET << std::endl;
         return 1;
     }
 
-    if (program["--tree"] == true) {
+    if (program.is_used("--tree")) {
         PrintSectionBanner("VCD SST");
         std::vector<vcdp::VCDScope*> top_scopes;
         for (auto& scope : trace->GetScopes()) {
@@ -64,7 +71,7 @@ int main(int argc, char const* argv[]) {
         std::cout << SECTION_SEPARATOR;
     }
 
-    if (program["--stats"] == true) {
+    if (program.is_used("--stats")) {
         PrintSectionBanner("VCD Stats");
         std::cout << "Scopes: " << trace->GetScopes().size() << std::endl;
         std::cout << "Signals: " << trace->GetSignals().size() << std::endl;
@@ -72,6 +79,44 @@ int main(int argc, char const* argv[]) {
         std::cout << "Date: " << trace->date << std::endl;
         std::cout << "Version: " << trace->version << std::endl;
         std::cout << SECTION_SEPARATOR;
+    }
+
+    if (program.is_used("--symbol")) {
+        std::string symbol = program.get<std::string>("--symbol");
+
+        try {
+            const auto& signal = trace->GetSignal(symbol);
+
+            if (signal == nullptr) {
+                std::string msg = "Signal hash \'" + symbol + "\' doesn't exists.";
+                throw std::runtime_error(msg);
+            }
+
+            std::string banner = "VCD Chrono --> " + signal->reference;
+            if (signal->lindex > -1)
+                banner += "[" + std::to_string(signal->lindex) + ":" + std::to_string(signal->rindex) + "]";
+            else if (signal->rindex > -1)
+                banner += "[" + std::to_string(signal->rindex) + "]";
+            PrintSectionBanner(banner);
+
+            const auto& signal_values = trace->GetSignalValues(symbol);
+            for (size_t i = 0; i < signal_values->size(); i++) {
+                if (stop_requested) {
+                    std::cout << vcdp::color::RESET << std::endl;
+                    std::cout << "Exiting using Ctrl-C" << std::endl;
+                    return(128 + SIGINT);
+                }
+                const auto& signal_value = signal_values->at(i);
+                std::cout << "# " << signal_value->time << " " << vcdp::color::YELLOW << vcdp::utils::VCDTimeUnit2String(trace->time_units)
+                          << vcdp::color::RESET << " -> " << *signal_value->value << std::endl;
+                if (i % 500 == 0 && i != 0) {
+                    std::cout << "Press Enter to continue...";
+                    std::cin.get();
+                }
+            }
+        } catch (std::exception& e) {
+            std::cerr << vcdp::color::RED << "Error: " << e.what() << vcdp::color::RESET << std::endl;
+        }
     }
 
 #ifndef _NDEBUG
@@ -129,3 +174,5 @@ void PrintSectionBanner(const std::string& title) {
     std::cout << "[ " << title << " ]\n";
     std::cout << "------------------------------------------\n";
 }
+
+void signal_callback_handler(int signum) { stop_requested = true; }

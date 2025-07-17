@@ -75,6 +75,21 @@ VCDBit Char2VCDBit(char bit) {
         default:    return VCDBit::VCD_X;
     }
 }
+
+const char* BitColor(VCDBit bit) {
+    switch (bit) {
+        case VCDBit::VCD_0  :   return color::GREEN;
+        case VCDBit::VCD_1  :   return color::CYAN;
+        case VCDBit::VCD_Z  :   return color::BLUE;
+        case VCDBit::VCD_X  :   return color::RED;
+        case VCDBit::VCD_U  :   return color::MAGENTA;
+        case VCDBit::VCD_W  :   return color::BG_RED;
+        case VCDBit::VCD_L  :   return color::BG_GREEN;
+        case VCDBit::VCD_H  :   return color::BG_GREEN;
+        case VCDBit::VCD_DC :   return color::WHITE;
+        default:                return color::RED;
+    }
+}
 // clang-format on
 
 }  // namespace VCDP_NAMESPACE::utils

@@ -36,6 +36,11 @@ class VCDValue {
     /// @brief Get the real value of the instance.
     [[nodiscard]] VCDReal GetValReal() const;
 
+    /// @brief Print the value
+    [[nodiscard]] std::string ToString() const;
+
+    friend std::ostream& operator<<(std::ostream& os, const VCDValue& value);
+
    private:
     VCDValueType m_Type;
     VCDValueVariant m_Data;

@@ -17,6 +17,8 @@ char VCDBit2Char(VCDBit bit);
 /// @brief Convert a a single char to VCDBit
 VCDBit Char2VCDBit(char bit);
 
+const char* BitColor(VCDBit bit);
+
 }  // namespace VCDP_NAMESPACE::utils
 
 namespace VCDP_NAMESPACE::color {
