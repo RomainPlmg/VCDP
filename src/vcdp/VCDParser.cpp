@@ -10,12 +10,13 @@ namespace VCDP_NAMESPACE {
 VCDFile* VCDParser::Parse(const std::string& file_path) {
     m_FilePath = file_path;
     m_File = std::make_unique<VCDFile>();
-
     m_Result.Clear();
+
+    ActionState state;
 
     try {
         pegtl::file_input in(file_path);
-        if (!pegtl::parse<lexical::full_grammar, action>(in, *m_File)) {
+        if (!pegtl::parse<lexical::full_grammar, action>(in, *m_File, state)) {
             m_Result.success = false;
             m_Result.errors.emplace_back("Internal parse error...");
         }
