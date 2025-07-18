@@ -5,7 +5,7 @@
 
 TEST_CASE("Basic header with a comment section") {
     vcdp::VCDParser parser;
-    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_comment.vcd");
+    auto trace = parser.Parse(TEST_DATA_DIR "header_comment.vcd");
     for (const auto& error : parser.GetResult().errors) {
         std::cerr << error << std::endl;
     }

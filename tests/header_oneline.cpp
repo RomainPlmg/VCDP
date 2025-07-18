@@ -5,7 +5,7 @@
 
 TEST_CASE("All the header content is on only one line") {
     vcdp::VCDParser parser;
-    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_oneline.vcd");
+    auto trace = parser.Parse(TEST_DATA_DIR "header_oneline.vcd");
     for (const auto& error : parser.GetResult().errors) {
         std::cerr << error << std::endl;
     }

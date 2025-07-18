@@ -5,7 +5,7 @@
 
 TEST_CASE("Indexed var section in the header") {
     vcdp::VCDParser parser;
-    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_indexed_var.vcd");
+    auto trace = parser.Parse(TEST_DATA_DIR "header_indexed_var.vcd");
     for (const auto& error : parser.GetResult().errors) {
         std::cerr << error << std::endl;
     }

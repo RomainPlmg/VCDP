@@ -7,7 +7,7 @@
 
 namespace VCDP_NAMESPACE {
 
-VCDFile* VCDParser::Parse(const std::string& file_path) {
+std::unique_ptr<VCDFile> VCDParser::Parse(const std::string& file_path) {
     m_FilePath = file_path;
     m_File = std::make_unique<VCDFile>();
     m_Result.Clear();
@@ -28,7 +28,7 @@ VCDFile* VCDParser::Parse(const std::string& file_path) {
     if (!m_Result.success) {
         return nullptr;
     }
-    return m_File.get();
+    return std::move(m_File);
 }
 
 }  // namespace VCDP_NAMESPACE

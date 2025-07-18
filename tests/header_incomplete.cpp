@@ -5,7 +5,7 @@
 
 TEST_CASE("Incomplete header") {
     vcdp::VCDParser parser;
-    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_incomplete.vcd");
+    auto trace = parser.Parse(TEST_DATA_DIR "header_incomplete.vcd");
     for (const auto& error : parser.GetResult().errors) {
         std::cerr << error << std::endl;
     }

@@ -19,7 +19,7 @@ const std::array<const vcdp::VCDSignalReference, VAR_NB> signal_name = {
 
 TEST_CASE("Var type test in the header") {
     vcdp::VCDParser parser;
-    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_var_types.vcd");
+    auto trace = parser.Parse(TEST_DATA_DIR "header_var_types.vcd");
     for (const auto& error : parser.GetResult().errors) {
         std::cerr << error << std::endl;
     }

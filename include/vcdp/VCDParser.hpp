@@ -36,7 +36,7 @@ struct VCDParseResult {
 
 class VCDParser {
    public:
-    VCDFile* Parse(const std::string& file_path);
+    std::unique_ptr<VCDFile> Parse(const std::string& file_path);
 
     const VCDParseResult& GetResult() const { return m_Result; }
 

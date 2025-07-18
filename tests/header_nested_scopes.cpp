@@ -5,7 +5,7 @@
 
 TEST_CASE("Nested scopes in the header") {
     vcdp::VCDParser parser;
-    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "header_nested_scopes.vcd");
+    auto trace = parser.Parse(TEST_DATA_DIR "header_nested_scopes.vcd");
     for (const auto& error : parser.GetResult().errors) {
         std::cerr << error << std::endl;
     }

@@ -5,7 +5,7 @@
 
 TEST_CASE("Empty file") {
     vcdp::VCDParser parser;
-    vcdp::VCDFile* trace = parser.Parse(TEST_DATA_DIR "empty_file.vcd");
+    auto trace = parser.Parse(TEST_DATA_DIR "empty_file.vcd");
     for (const auto& error : parser.GetResult().errors) {
         std::cerr << error << std::endl;
     }
