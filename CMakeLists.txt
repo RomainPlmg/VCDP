@@ -5,32 +5,16 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Détection de l'environnement
-if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    message(STATUS "Compiler : MSVC — Clang-Tidy disable")
-    set(CMAKE_CXX_CLANG_TIDY "")
+string(COMPARE EQUAL "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}" VCDP_STANDALONE)
+option(VCDP_BUILD_TESTS "Build the VCDP test programs" ${VCDP_STANDALONE})
 
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    message(STATUS "Compiler : GCC — Clang-Tidy disable")
-    set(CMAKE_CXX_CLANG_TIDY "")
-
-elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    if (CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC")
-        message(STATUS "Compiler : Clang-CL (MSVC) — Clang-Tidy disable")
-        set(CMAKE_CXX_CLANG_TIDY "")
-    else()
-        message(STATUS "Compilateur : Clang POSIX — Clang-Tidy activé")
-        set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
-    endif()
-else()
-    message(WARNING "Unknown compiler (${CMAKE_CXX_COMPILER_ID}) — Clang-Tidy disable")
-    set(CMAKE_CXX_CLANG_TIDY "")
+if (VCDP_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(libs/doctest)
+    add_subdirectory(tests)
 endif()
 
-enable_testing()
-
 add_subdirectory(libs/pegtl)
-add_subdirectory(libs/doctest)
 add_subdirectory(libs/argparse)
 
 file(GLOB_RECURSE SRC_FILES
@@ -44,8 +28,6 @@ add_library(vcdplib STATIC ${SRC_FILES})
 
 target_link_libraries(vcdplib PUBLIC pegtl)
 target_include_directories(vcdplib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-add_subdirectory(tests)
 
 # Creating standalone executable
 add_executable(vcdp src/main.cpp)
