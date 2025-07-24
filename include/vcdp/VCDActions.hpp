@@ -6,6 +6,7 @@
 #include "Utils.hpp"
 #include "VCDFile.hpp"
 #include "VCDLexical.hpp"
+#include "VCDValue.hpp"
 
 namespace VCDP_NAMESPACE {
 
@@ -218,7 +219,7 @@ struct action<lexical::var_identifier> {
         if (state.in_header) {
             file.current_signal_builder.hash = hash;
         } else {
-            // If signal doesn't exists
+            // If signal doesn't exist
             if (file.GetSignalValues(hash) == nullptr) {
                 std::ostringstream msg;
                 msg << "Unknown hash \'" << hash << "\'.";
@@ -235,7 +236,7 @@ struct action<lexical::var_identifier> {
                 timed_value = {state.current_time, new VCDValue(state.current_real)};
             }
 
-            file.AddSignalValue(new VCDTimedValue(timed_value), hash);
+            file.AddSignalValue(VCDTimedValue(timed_value), hash);
         }
     }
 };

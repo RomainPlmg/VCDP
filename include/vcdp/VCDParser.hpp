@@ -12,8 +12,8 @@ struct VCDParseResult {
     std::vector<std::string> errors;
     std::vector<std::string> warnings;
 
-    bool HasErrors() const { return !errors.empty(); }
-    bool HasWarnings() const { return !warnings.empty(); }
+    [[nodiscard]] bool HasErrors() const { return !errors.empty(); }
+    [[nodiscard]] bool HasWarnings() const { return !warnings.empty(); }
 
     void PrintErrors(std::ostream& os = std::cerr) const {
         for (const auto& error : errors) {
@@ -38,7 +38,7 @@ class VCDParser {
    public:
     std::unique_ptr<VCDFile> Parse(const std::string& file_path);
 
-    const VCDParseResult& GetResult() const { return m_Result; }
+    [[nodiscard]] const VCDParseResult& GetResult() const { return m_Result; }
 
    private:
     std::string m_FilePath;

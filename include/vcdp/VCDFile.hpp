@@ -5,7 +5,6 @@
 
 #include "Config.hpp"
 #include "VCDTypes.hpp"
-#include "VCDValue.hpp"
 
 /// @brief Top level object to represent a single VCD file.
 
@@ -74,18 +73,15 @@ class VCDFile {
     /// @brief Instance a new VCD file container.
     VCDFile() = default;
 
-    /// @brief Destroy VCD file container.
-    ~VCDFile();
-
     /**
      * @brief Add a new scope object to the VCD file.
-     * @param p_scope The VCDScope object to add to the VCD file.
+     * @param scope The VCDScope object to add to the VCD file.
      */
     void AddScope(std::unique_ptr<VCDScope>& scope);
 
     /**
      * @brief Add a new signal to the VCD file.
-     * @param p_signal The VCDSignal object to add to the VCD file.
+     * @param signal The VCDSignal object to add to the VCD file.
      */
     void AddSignal(std::unique_ptr<VCDSignal>& signal);
 
@@ -98,10 +94,10 @@ class VCDFile {
 
     /**
      * @brief Add a new signal value to the VCD file, tagged by time.
-     * @param p_time_val A signal value, tagged by the time it occurs.
+     * @param time_val A signal value, tagged by the time it occurs.
      * @param hash The VCD hash value representing the signal.
      */
-    void AddSignalValue(VCDTimedValue* p_time_val, const VCDSignalHash& hash);
+    void AddSignalValue(const VCDTimedValue& time_val, const VCDSignalHash& hash);
 
     /**
      * @brief Return the scope object in the VCD file with this name.
@@ -143,6 +139,9 @@ class VCDFile {
     /// @brief Return a flattened vector of all signals in the file.
     [[nodiscard]] const std::vector<std::unique_ptr<VCDSignal>>& GetSignals() const { return m_Signals; }
 
+    /// @brief Check if hash exists in value map
+    [[nodiscard]] bool Exists(const VCDSignalHash& hash) const { return m_ValMap.contains(hash);}
+
     /// @brief Timescale of the VCD file.
     VCDTimeUnit time_units = VCDTimeUnit::TIME_UNKNOWN;
 
@@ -171,7 +170,7 @@ class VCDFile {
     std::vector<std::unique_ptr<VCDSignal>> m_Signals;
     std::vector<std::unique_ptr<VCDScope>> m_Scopes;
     std::vector<VCDTime> m_Times;
-    std::unordered_map<VCDSignalHash, VCDSignalValues*> m_ValMap;
+    std::unordered_map<VCDSignalHash, VCDSignalValues> m_ValMap;
 };
 
 }  // namespace VCDP_NAMESPACE

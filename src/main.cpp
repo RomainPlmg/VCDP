@@ -12,11 +12,11 @@ constexpr std::string SECTION_SEPARATOR = "\n\n";
 
 std::atomic_bool stop_requested = false;
 
-void PrintScope(vcdp::VCDScope* scope, std::vector<bool> last_flags);
+void PrintScope(const vcdp::VCDScope* scope, std::vector<bool> last_flags);
 void PrintSectionBanner(const std::string& title);
 void signal_callback_handler(int signum);
 
-int main(int argc, char const* argv[]) {
+int main(const int argc, char const* argv[]) {
     std::signal(SIGINT, signal_callback_handler);
     // Enable UTF-8 encoding for Windows
 #ifdef _WIN32
@@ -64,7 +64,7 @@ int main(int argc, char const* argv[]) {
             if (scope->parent == nullptr) top_scopes.push_back(scope.get());
         }
 
-        for (auto& scope : top_scopes) {
+        for (const auto& scope : top_scopes) {
             PrintScope(scope, {});
         }
 
@@ -82,13 +82,13 @@ int main(int argc, char const* argv[]) {
     }
 
     if (program.is_used("--symbol")) {
-        std::string symbol = program.get<std::string>("--symbol");
+        const auto symbol = program.get<std::string>("--symbol");
 
         try {
             const auto& signal = trace->GetSignal(symbol);
 
             if (signal == nullptr) {
-                std::string msg = "Signal hash \'" + symbol + "\' doesn't exists.";
+                const std::string msg = "Signal hash \'" + symbol + "\' doesn't exists.";
                 throw std::runtime_error(msg);
             }
 
@@ -106,9 +106,9 @@ int main(int argc, char const* argv[]) {
                     std::cout << "Exiting using Ctrl-C" << std::endl;
                     return(128 + SIGINT);
                 }
-                const auto& signal_value = signal_values->at(i);
-                std::cout << "# " << signal_value->time << " " << vcdp::color::YELLOW << vcdp::utils::VCDTimeUnit2String(trace->time_units)
-                          << vcdp::color::RESET << " -> " << *signal_value->value << std::endl;
+                const auto& [time, value] = signal_values->at(i);
+                std::cout << "# " << time << " " << vcdp::color::YELLOW << vcdp::utils::VCDTimeUnit2String(trace->time_units)
+                          << vcdp::color::RESET << " -> " << value << std::endl;
                 if (i % 500 == 0 && i != 0) {
                     std::cout << "Press Enter to continue...";
                     std::cin.get();
@@ -127,7 +127,7 @@ int main(int argc, char const* argv[]) {
     return 0;
 }
 
-void PrintScope(vcdp::VCDScope* scope, std::vector<bool> last_flags) {
+void PrintScope(const vcdp::VCDScope* scope, std::vector<bool> last_flags) {
     // Print scope
     for (size_t i = 0; i + 1 < last_flags.size(); ++i) {
         std::cout << (last_flags[i] ? "    " : "│   ");
@@ -139,11 +139,11 @@ void PrintScope(vcdp::VCDScope* scope, std::vector<bool> last_flags) {
 
     // Print signals
     for (size_t i = 0; i < scope->signals.size(); i++) {
-        for (size_t j = 0; j < last_flags.size(); ++j) {
-            std::cout << (last_flags[j] ? "    " : "│   ");
+        for (auto && last_flag : last_flags) {
+            std::cout << (last_flag ? "    " : "│   ");
         }
 
-        bool last_signal = (i == scope->signals.size() - 1) && scope->children.empty();
+        const bool last_signal = (i == scope->signals.size() - 1) && scope->children.empty();
         std::cout << (last_signal ? "└── " : "├── ");
 
         auto& signal = scope->signals.at(i);
@@ -160,9 +160,9 @@ void PrintScope(vcdp::VCDScope* scope, std::vector<bool> last_flags) {
                   << vcdp::color::YELLOW << "id" << vcdp::color::RESET << ": " << signal->hash << ")" << std::endl;
     }
 
-    // Recursive for childs
+    // Recursive for children
     for (size_t i = 0; i < scope->children.size(); ++i) {
-        bool is_last = (i == scope->children.size() - 1);
+        const bool is_last = (i == scope->children.size() - 1);
         auto new_flags = last_flags;
         new_flags.push_back(is_last);
         PrintScope(scope->children[i], new_flags);

@@ -71,7 +71,7 @@ struct VCDTimedValue {
 };
 
 /// @brief A vector of tagged time/value pairs, sorted by time values.
-using VCDSignalValues = std::vector<VCDTimedValue*>;
+using VCDSignalValues = std::vector<VCDTimedValue>;
 
 /// @brief Variable types of a signal in a VCD file.
 enum class VCDVarType {
