@@ -104,11 +104,11 @@ int main(const int argc, char const* argv[]) {
                 if (stop_requested) {
                     std::cout << vcdp::color::RESET << std::endl;
                     std::cout << "Exiting using Ctrl-C" << std::endl;
-                    return(128 + SIGINT);
+                    return (128 + SIGINT);
                 }
                 const auto& [time, value] = signal_values->at(i);
-                std::cout << "# " << time << " " << vcdp::color::YELLOW << vcdp::utils::VCDTimeUnit2String(trace->time_units)
-                          << vcdp::color::RESET << " -> " << value << std::endl;
+                std::cout << "# " << time << " " << vcdp::color::YELLOW << vcdp::utils::VCDTimeUnit2String(trace->time_units) << vcdp::color::RESET
+                          << " -> " << value << std::endl;
                 if (i % 500 == 0 && i != 0) {
                     std::cout << "Press Enter to continue...";
                     std::cin.get();
@@ -120,6 +120,7 @@ int main(const int argc, char const* argv[]) {
     }
 
 #ifndef _NDEBUG
+    trace.reset();
     std::cout << "\n[DEBUG] Press any key to exit...";
     std::cin.get();
 #endif
@@ -139,7 +140,7 @@ void PrintScope(const vcdp::VCDScope* scope, std::vector<bool> last_flags) {
 
     // Print signals
     for (size_t i = 0; i < scope->signals.size(); i++) {
-        for (auto && last_flag : last_flags) {
+        for (auto&& last_flag : last_flags) {
             std::cout << (last_flag ? "    " : "│   ");
         }
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 #include "Config.hpp"
 #include "VCDTypes.hpp"
 

@@ -11,64 +11,6 @@
 
 namespace VCDP_NAMESPACE {
 
-struct VCDScopeBuilder {
-    VCDScopeName name;
-    VCDScopeType type = VCDScopeType::VCD_SCOPE_UNKNOWN;
-
-    [[nodiscard]] bool IsComplete() const { return !name.empty() && type != VCDScopeType::VCD_SCOPE_UNKNOWN; }
-
-    void Reset() {
-        name.clear();
-        type = VCDScopeType::VCD_SCOPE_UNKNOWN;
-    }
-
-    std::unique_ptr<VCDScope> Build(VCDScope* parent) {
-        auto scope = std::make_unique<VCDScope>();
-        scope->name = name;
-        scope->type = type;
-        scope->parent = parent;
-
-        Reset();
-
-        return scope;
-    }
-};
-
-struct VCDSignalBuilder {
-    VCDSignalHash hash;
-    VCDSignalReference reference;
-    VCDSignalSize size = 0;
-    VCDVarType type = VCDVarType::VCD_VAR_UNKNOWN;
-    int lindex = -1;
-    int rindex = -1;
-
-    [[nodiscard]] bool IsComplete() const { return !hash.empty() && !reference.empty() && size > 0 && type != VCDVarType::VCD_VAR_UNKNOWN; }
-
-    void Reset() {
-        hash.clear();
-        reference.clear();
-        size = 0;
-        type = VCDVarType::VCD_VAR_UNKNOWN;
-        lindex = -1;
-        rindex = -1;
-    }
-
-    std::unique_ptr<VCDSignal> Build(VCDScope* scope) {
-        auto signal = std::make_unique<VCDSignal>();
-        signal->hash = hash;
-        signal->reference = reference;
-        signal->size = size;
-        signal->type = type;
-        signal->lindex = lindex;
-        signal->rindex = rindex;
-        signal->scope = scope;
-
-        Reset();
-
-        return signal;
-    }
-};
-
 class VCDFile {
    public:
     /// @brief Instance a new VCD file container.
@@ -141,7 +83,7 @@ class VCDFile {
     [[nodiscard]] const std::vector<std::unique_ptr<VCDSignal>>& GetSignals() const { return m_Signals; }
 
     /// @brief Check if hash exists in value map
-    [[nodiscard]] bool Exists(const VCDSignalHash& hash) const { return m_ValMap.contains(hash);}
+    [[nodiscard]] bool Exists(const VCDSignalHash& hash) const { return m_ValMap.contains(hash); }
 
     /// @brief Timescale of the VCD file.
     VCDTimeUnit time_units = VCDTimeUnit::TIME_UNKNOWN;
@@ -154,15 +96,6 @@ class VCDFile {
 
     /// @brief Version string of the simulator which generated the VCD.
     std::string version;
-
-    /// @brief Comment string of the simulator which generated the VCD. -> ONLY USED FOR TEST
-    std::string comment;
-
-    /// @brief The current scope build by the parser
-    VCDScopeBuilder current_scope_builder;
-
-    /// @brief The current signal build by the parser
-    VCDSignalBuilder current_signal_builder;
 
     /// @brief Current scope nodes of the VCD signals -> To manage parents & children
     VCDScope* current_scope = nullptr;

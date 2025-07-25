@@ -10,6 +10,65 @@
 
 namespace VCDP_NAMESPACE {
 
+struct VCDScopeBuilder {
+    VCDScopeName name;
+    VCDScopeType type = VCDScopeType::VCD_SCOPE_UNKNOWN;
+
+    [[nodiscard]] bool IsComplete() const { return !name.empty() && type != VCDScopeType::VCD_SCOPE_UNKNOWN; }
+
+    void Reset() {
+        name.clear();
+        type = VCDScopeType::VCD_SCOPE_UNKNOWN;
+    }
+
+    std::unique_ptr<VCDScope> Build(VCDScope* parent) {
+        auto scope = std::make_unique<VCDScope>();
+        scope->name = name;
+        scope->type = type;
+        scope->parent = parent;
+
+        Reset();
+
+        return scope;
+    }
+};
+
+struct VCDSignalBuilder {
+    VCDSignalHash hash;
+    VCDSignalReference reference;
+    VCDSignalSize size = 0;
+    VCDVarType type = VCDVarType::VCD_VAR_UNKNOWN;
+    int rindex = -1;
+    int lindex = -1;
+
+    [[nodiscard]] bool IsComplete() const { return !hash.empty() && !reference.empty() && size > 0 && type != VCDVarType::VCD_VAR_UNKNOWN; }
+
+    void Reset() {
+        hash.clear();
+        reference.clear();
+        size = 0;
+        type = VCDVarType::VCD_VAR_UNKNOWN;
+        rindex = -1;
+        lindex = -1;
+    }
+
+    std::unique_ptr<VCDSignal> Build(VCDScope* scope) {
+        std::vector<std::unique_ptr<VCDSignal>> result(size);
+        auto signal = std::make_unique<VCDSignal>();
+        signal->reference = reference;
+        signal->type = type;
+        signal->scope = scope;
+        signal->hash = hash;
+        signal->rindex = rindex;
+        signal->lindex = lindex;
+        signal->size = size;
+
+        Reset();
+
+        return std::move(signal);
+    }
+};
+
 struct ActionState {
     bool in_header = true;
     VCDTime current_time = 0;
@@ -18,6 +77,8 @@ struct ActionState {
     VCDBit current_scalar = VCDBit::VCD_X;
     VCDBitVector current_bit_vector;
     VCDReal current_real = 0.0;
+    VCDScopeBuilder current_scope_builder;
+    VCDSignalBuilder current_signal_builder;
 
     void Reset() {
         in_header = true;
@@ -49,16 +110,6 @@ inline std::string NormalizeSpaces(const std::string& input) {
 
 template <typename Rule>
 struct action : pegtl::nothing<Rule> {};
-
-template <>
-struct action<lexical::text_comment> {
-    template <typename Input>
-    static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        const std::string comment = in.string();
-
-        file.comment = NormalizeSpaces(comment);
-    }
-};
 
 template <>
 struct action<lexical::text_date> {
@@ -112,17 +163,17 @@ struct action<lexical::scope_type> {
     static void apply(const Input& in, VCDFile& file, ActionState& state) {
         std::string type = in.string();
         if (type == "begin")
-            file.current_scope_builder.type = VCDScopeType::VCD_SCOPE_BEGIN;
+            state.current_scope_builder.type = VCDScopeType::VCD_SCOPE_BEGIN;
         else if (type == "fork")
-            file.current_scope_builder.type = VCDScopeType::VCD_SCOPE_FORK;
+            state.current_scope_builder.type = VCDScopeType::VCD_SCOPE_FORK;
         else if (type == "function")
-            file.current_scope_builder.type = VCDScopeType::VCD_SCOPE_FUNCTION;
+            state.current_scope_builder.type = VCDScopeType::VCD_SCOPE_FUNCTION;
         else if (type == "module")
-            file.current_scope_builder.type = VCDScopeType::VCD_SCOPE_MODULE;
+            state.current_scope_builder.type = VCDScopeType::VCD_SCOPE_MODULE;
         else if (type == "task")
-            file.current_scope_builder.type = VCDScopeType::VCD_SCOPE_TASK;
+            state.current_scope_builder.type = VCDScopeType::VCD_SCOPE_TASK;
         else
-            file.current_scope_builder.type = VCDScopeType::VCD_SCOPE_UNKNOWN;
+            state.current_scope_builder.type = VCDScopeType::VCD_SCOPE_UNKNOWN;
     }
 };
 
@@ -130,7 +181,7 @@ template <>
 struct action<lexical::scope_identifier> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        file.current_scope_builder.name = in.string();
+        state.current_scope_builder.name = in.string();
     }
 };
 
@@ -138,8 +189,8 @@ template <>
 struct action<lexical::scope_end> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        if (file.current_scope_builder.IsComplete()) {
-            auto scope = file.current_scope_builder.Build(file.current_scope);
+        if (state.current_scope_builder.IsComplete()) {
+            auto scope = state.current_scope_builder.Build(file.current_scope);
             file.AddScope(scope);
         }
     }
@@ -163,43 +214,43 @@ struct action<lexical::var_type> {
     static void apply(const Input& in, VCDFile& file, ActionState& state) {
         std::string type = in.string();
         if (type == "event")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_EVENT;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_EVENT;
         else if (type == "integer")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_INTEGER;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_INTEGER;
         else if (type == "parameter")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_PARAMETER;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_PARAMETER;
         else if (type == "real")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_REAL;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_REAL;
         else if (type == "realtime")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_REALTIME;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_REALTIME;
         else if (type == "reg")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_REG;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_REG;
         else if (type == "supply0")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_SUPPLY0;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_SUPPLY0;
         else if (type == "supply1")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_SUPPLY1;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_SUPPLY1;
         else if (type == "time")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_TIME;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_TIME;
         else if (type == "tri")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_TRI;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_TRI;
         else if (type == "triand")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_TRIAND;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_TRIAND;
         else if (type == "trior")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_TRIOR;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_TRIOR;
         else if (type == "trireg")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_TRIREG;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_TRIREG;
         else if (type == "tri0")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_TRI0;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_TRI0;
         else if (type == "tri1")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_TRI1;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_TRI1;
         else if (type == "wand")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_WAND;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_WAND;
         else if (type == "wire")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_WIRE;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_WIRE;
         else if (type == "wor")
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_WOR;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_WOR;
         else
-            file.current_signal_builder.type = VCDVarType::VCD_VAR_UNKNOWN;
+            state.current_signal_builder.type = VCDVarType::VCD_VAR_UNKNOWN;
     }
 };
 
@@ -207,7 +258,8 @@ template <>
 struct action<lexical::var_size> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        file.current_signal_builder.size = std::stoi(in.string());
+        const uint32_t size = std::stoi(in.string());
+        state.current_signal_builder.size = size;
     }
 };
 
@@ -217,10 +269,10 @@ struct action<lexical::var_identifier> {
     static void apply(const Input& in, VCDFile& file, ActionState& state) {
         std::string hash = in.string();
         if (state.in_header) {
-            file.current_signal_builder.hash = hash;
+            state.current_signal_builder.hash = hash;
         } else {
             // If signal doesn't exist
-            if (file.GetSignalValues(hash) == nullptr) {
+            if (!file.Exists(hash)) {
                 std::ostringstream msg;
                 msg << "Unknown hash \'" << hash << "\'.";
                 throw pegtl::parse_error(msg.str(), in);
@@ -245,7 +297,7 @@ template <>
 struct action<lexical::var_name> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        file.current_signal_builder.reference = in.string();
+        state.current_signal_builder.reference = in.string();
     }
 };
 
@@ -253,7 +305,7 @@ template <>
 struct action<lexical::lsb_index> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        file.current_signal_builder.rindex = std::stoi(in.string());
+        state.current_signal_builder.rindex = std::stoi(in.string());
     }
 };
 
@@ -261,7 +313,7 @@ template <>
 struct action<lexical::msb_index> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        file.current_signal_builder.lindex = std::stoi(in.string());
+        state.current_signal_builder.lindex = std::stoi(in.string());
     }
 };
 
@@ -269,34 +321,34 @@ template <>
 struct action<lexical::var_end> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        if (file.current_signal_builder.IsComplete()) {
-            auto signal = file.current_signal_builder.Build(file.current_scope);
+        if (state.current_signal_builder.IsComplete()) {
+            auto signal = state.current_signal_builder.Build(file.current_scope);
             if (signal->scope == nullptr) {
                 std::ostringstream msg;
                 msg << "Signal \'" << signal->reference << "\' needs to be part of a scope";
                 throw pegtl::parse_error(msg.str(), in);
             }
 
-            if (signal->rindex != -1) {
-                if (signal->lindex != -1) {
-                    // Range size exception
-                    int range_size = std::abs(signal->lindex - signal->rindex) + 1;
-                    if (range_size != signal->size) {
-                        std::ostringstream msg;
-                        msg << "Range size mismatch for signal '" << signal->reference << "': range [" << signal->lindex << ":" << signal->rindex
-                            << "] implies size " << range_size << " but declared size is " << signal->size;
-                        throw pegtl::parse_error(msg.str(), in);
-                    }
-                } else {
-                    // Single index exception
-                    if (signal->size != 1) {
-                        std::ostringstream msg;
-                        msg << "Size mismatch for signal '" << signal->reference << "': index [" << signal->rindex
-                            << "] implies size 1 but declared size is " << signal->size;
-                        throw pegtl::parse_error(msg.str(), in);
-                    }
-                }
-            }
+            // if (signal->index != -1) {
+            //     if (size > 1) {
+            //         // Range size exception
+            //         int range_size = std::abs(size - 1 - signal->index) + 1;
+            //         if (range_size != size) {
+            //             std::ostringstream msg;
+            //             msg << "Range size mismatch for signal '" << signal->reference << "': range [" << size - 1 << ":" << signal->index
+            //                 << "] implies size " << range_size << " but declared size is " << size;
+            //             throw pegtl::parse_error(msg.str(), in);
+            //         }
+            //     } else {
+            //         // Single index exception
+            //         if (size != 1) {
+            //             std::ostringstream msg;
+            //             msg << "Size mismatch for signal '" << signal->reference << "': index [" << signal->index
+            //                 << "] implies size 1 but declared size is " << size;
+            //             throw pegtl::parse_error(msg.str(), in);
+            //         }
+            //     }
+            // }
             file.AddSignal(signal);
         }
     }
