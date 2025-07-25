@@ -4,6 +4,7 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include <memory>
 
 #include "Config.hpp"
 
@@ -60,18 +61,6 @@ enum class VCDValueType {
     VCD_VECTOR,  //!< Vector of VCDBit
     VCD_REAL     //!< IEEE Floating point (64bit).
 };
-
-// Forward declaration of class.
-class VCDValue;
-
-/// @brief A signal value tagged with times.
-struct VCDTimedValue {
-    VCDTime time;
-    VCDValue* value;
-};
-
-/// @brief A vector of tagged time/value pairs, sorted by time values.
-using VCDSignalValues = std::vector<VCDTimedValue>;
 
 /// @brief Variable types of a signal in a VCD file.
 enum class VCDVarType {

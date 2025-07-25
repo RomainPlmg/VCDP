@@ -20,7 +20,7 @@ void VCDFile::AddSignal(std::unique_ptr<VCDSignal>& signal) {
     // Add timestamp entry
     if (!m_ValMap.contains(p_signal->hash)) {
         // Value will be populated later
-        m_ValMap[p_signal->hash] = {};
+        m_ValMap[p_signal->hash].clear();
     }
 }
 
@@ -42,7 +42,7 @@ VCDSignal* VCDFile::GetSignal(const VCDSignalHash& hash) const {
     return nullptr;
 }
 
-void VCDFile::AddSignalValue(const VCDTimedValue& time_val, const VCDSignalHash& hash) { m_ValMap[hash].push_back(time_val); }
+void VCDFile::AddSignalValue(VCDTimedValue time_val, const VCDSignalHash& hash) { m_ValMap[hash].push_back(std::move(time_val)); }
 
 VCDValue* VCDFile::GetSignalValue(const VCDSignalHash& hash, const VCDTime time, const bool erase_prior) {
     const auto it = m_ValMap.find(hash);
@@ -57,7 +57,7 @@ VCDValue* VCDFile::GetSignalValue(const VCDSignalHash& hash, const VCDTime time,
     for (auto value_it = values.begin(); value_it != values.end(); ++value_it) {
         if (value_it->time <= time) {
             erase_until = value_it;
-            rt = value_it->value;
+            rt = value_it->value.get();
         } else {
             break;
         }
@@ -66,7 +66,7 @@ VCDValue* VCDFile::GetSignalValue(const VCDSignalHash& hash, const VCDTime time,
     if (erase_prior) {
         // Avoid O(n^2) performance for large sequential scans
         for (auto i = values.begin(); i != erase_until; ++i) {
-            delete i->value;
+            i->value.reset();
         }
         values.erase(values.begin(), erase_until);
     }

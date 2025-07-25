@@ -46,4 +46,13 @@ class VCDValue {
     VCDValueVariant m_Data;
 };
 
+/// @brief A signal value tagged with times.
+struct VCDTimedValue {
+    VCDTime time;
+    std::unique_ptr<VCDValue> value;
+};
+
+/// @brief A vector of tagged time/value pairs, sorted by time values.
+using VCDSignalValues = std::vector<VCDTimedValue>;
+
 }  // namespace VCDP_NAMESPACE

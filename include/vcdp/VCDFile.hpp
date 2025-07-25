@@ -5,6 +5,7 @@
 
 #include "Config.hpp"
 #include "VCDTypes.hpp"
+#include "VCDValue.hpp"
 
 /// @brief Top level object to represent a single VCD file.
 
@@ -97,7 +98,7 @@ class VCDFile {
      * @param time_val A signal value, tagged by the time it occurs.
      * @param hash The VCD hash value representing the signal.
      */
-    void AddSignalValue(const VCDTimedValue& time_val, const VCDSignalHash& hash);
+    void AddSignalValue(VCDTimedValue time_val, const VCDSignalHash& hash);
 
     /**
      * @brief Return the scope object in the VCD file with this name.

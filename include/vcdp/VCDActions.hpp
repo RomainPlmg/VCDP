@@ -229,14 +229,14 @@ struct action<lexical::var_identifier> {
             // Register value change
             VCDTimedValue timed_value = {};
             if (state.current_value_type == VCDValueType::VCD_SCALAR) {
-                timed_value = {state.current_time, new VCDValue(state.current_scalar)};
+                timed_value = {state.current_time, std::make_unique<VCDValue>(state.current_scalar)};
             } else if (state.current_value_type == VCDValueType::VCD_VECTOR) {
-                timed_value = {state.current_time, new VCDValue(state.current_bit_vector)};
+                timed_value = {state.current_time, std::make_unique<VCDValue>(state.current_bit_vector)};
             } else {
-                timed_value = {state.current_time, new VCDValue(state.current_real)};
+                timed_value = {state.current_time, std::make_unique<VCDValue>(state.current_real)};
             }
 
-            file.AddSignalValue(VCDTimedValue(timed_value), hash);
+            file.AddSignalValue(std::move(timed_value), hash);
         }
     }
 };
