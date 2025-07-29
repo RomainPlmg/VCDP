@@ -1,8 +1,10 @@
 #pragma once
 
-#include <iostream>
+#include <algorithm>
+#include <sstream>
 
 #include "Config.hpp"
+#include "Utils.hpp"
 #include "VCDTypes.hpp"
 
 namespace VCDP_NAMESPACE {
@@ -11,50 +13,98 @@ namespace VCDP_NAMESPACE {
  * @brief Represents a single value found in a VCD File.
  * @details Can contain a single bit (a scalar), a bit vector, or an IEEE floating point number.
  */
+struct VCDValue {
+    VCDValueType type : 2;
+    size_t vector_size = 0;
 
-class VCDValue {
-   public:
-    /// @brief Create a new VCDValue with the type VCD_SCALAR
-    explicit VCDValue(VCDBit data) : m_Type(VCDValueType::VCD_SCALAR), m_Data(data) {}
+    union {
+        VCDBit scalar;
+        VCDBit* vector;
+        VCDReal real;
+    };
 
-    /// @brief Create a new VCDValue with the type VCD_VECTOR
-    explicit VCDValue(VCDBitVector& data) : m_Type(VCDValueType::VCD_VECTOR), m_Data(data) {}
+    /// @brief Constructor
+    VCDValue() : type(VCDValueType::VCD_SCALAR), scalar(VCDBit::VCD_0) {}
+    /// @brief for scalar
+    explicit VCDValue(const VCDBit bit) : type(VCDValueType::VCD_SCALAR), scalar(bit) {}
+    /// @brief For large vector (> 64 bits)
+    explicit VCDValue(const VCDBit* bits, const size_t size) : type(VCDValueType::VCD_VECTOR) {
+        if (!bits || size == 0) {
+            vector_size = 0;
+            vector = nullptr;
+            return;
+        }
+        vector_size = size;
+        vector = new VCDBit[size];
+        std::copy(bits, bits + size, vector);
+    }
 
-    /// @brief Create a new VCDValue with the type VCD_REAL
-    explicit VCDValue(VCDReal data) : m_Type(VCDValueType::VCD_REAL), m_Data(data) {}
+    /// @brief For real
+    explicit VCDValue(const VCDReal r) : type(VCDValueType::VCD_REAL), real(r) {}
 
-    /// @brief Destroy VCD value container
-    ~VCDValue() = default;
+    /// @brief Destructor
+    ~VCDValue() {
+        if (type == VCDValueType::VCD_VECTOR) {
+            delete[] vector;
+            vector = nullptr;
+        }
+    }
 
-    /// @brief Return the type of value stored by this class instance.
-    [[nodiscard]] VCDValueType GetType() const { return m_Type; }
+    /// @brief Copy constructor
+    VCDValue(const VCDValue& other) : type(other.type), vector_size(other.vector_size) {
+        switch (type) {
+            case VCDValueType::VCD_SCALAR:
+                scalar = other.scalar;
+                break;
+            case VCDValueType::VCD_VECTOR:
+                if (vector_size) {
+                    vector = new VCDBit[vector_size];
+                    std::copy_n(other.vector, vector_size, vector);
+                } else {
+                    vector = nullptr;
+                }
+                break;
+            case VCDValueType::VCD_REAL:
+                real = other.real;
+                break;
+            default:
+                break;
+        }
+    }
 
-    /// @brief Get the bit value of the instance.
-    [[nodiscard]] VCDBit GetValBit() const;
+    [[nodiscard]] std::string ToString() const {
+        std::ostringstream oss;
+        switch (type) {
+            case VCDValueType::VCD_SCALAR:
+                oss << utils::vcdBit2Char(scalar);
+                return oss.str();
+            case VCDValueType::VCD_VECTOR: {
+                oss << "0b";
+                for (size_t i = 0; i < vector_size; i++) {
+                    oss << utils::vcdBit2Char(vector[i]);
+                }
+                return oss.str();
+            }
+            case VCDValueType::VCD_REAL:
+                oss << real;
 
-    /// @brief Get the vector value of the instance.
-    [[nodiscard]] const VCDBitVector& GetValVector() const;
+            default:
+                oss << "?";
+                break;
+        }
 
-    /// @brief Get the real value of the instance.
-    [[nodiscard]] VCDReal GetValReal() const;
+        return oss.str();
+    };
 
-    /// @brief Print the value
-    [[nodiscard]] std::string ToString() const;
-
-    friend std::ostream& operator<<(std::ostream& os, const VCDValue& value);
-
-   private:
-    VCDValueType m_Type;
-    VCDValueVariant m_Data;
+    friend std::ostream& operator<<(std::ostream& os, const VCDValue& value) { return os << value.ToString(); }
 };
 
 /// @brief A signal value tagged with times.
-struct VCDTimedValue {
-    VCDTime time;
-    std::unique_ptr<VCDValue> value;
+struct VCDSignalChange {
+    VCDTime delta;
+    VCDValue value;
 };
 
-/// @brief A vector of tagged time/value pairs, sorted by time values.
-using VCDSignalValues = std::vector<VCDTimedValue>;
+using VCDSignalChanges = std::vector<VCDSignalChange>;
 
 }  // namespace VCDP_NAMESPACE

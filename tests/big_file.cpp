@@ -3,9 +3,9 @@
 
 #include "vcdp/VCDP.hpp"
 
-TEST_CASE("Comment section is multiple lines") {
+TEST_CASE("Very big VCD file") {
     vcdp::VCDParser parser;
-    auto trace = parser.Parse(TEST_DATA_DIR "header_multiline_comment.vcd");
+    const auto trace = parser.Parse(TEST_DATA_DIR "big_file.vcd");
     for (const auto& error : parser.GetResult().errors) {
         std::cerr << error << std::endl;
     }

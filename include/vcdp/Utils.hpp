@@ -6,18 +6,18 @@
 namespace VCDP_NAMESPACE::utils {
 
 /// @brief Convert a VCDVarType to a string
-std::string VCDVarType2String(VCDVarType type);
+std::string vcdVarType2String(VCDVarType type);
 
 /// @brief Convert a VCDTimeUnit to a string
-std::string VCDTimeUnit2String(VCDTimeUnit unit);
+std::string vcdTimeUnit2String(VCDTimeUnit unit);
 
 /// @brief Convert a VCDBit to a single char
-char VCDBit2Char(VCDBit bit);
+char vcdBit2Char(VCDBit bit);
 
-/// @brief Convert a a single char to VCDBit
-VCDBit Char2VCDBit(char bit);
+/// @brief Convert a single char to VCDBit
+VCDBit char2VCDBit(char bit);
 
-const char* BitColor(VCDBit bit);
+const char* bitColor(VCDBit bit);
 
 }  // namespace VCDP_NAMESPACE::utils
 
@@ -51,13 +51,13 @@ inline constexpr const char* BG_MAGENTA = "\033[45m";
 inline constexpr const char* BG_CYAN = "\033[46m";
 inline constexpr const char* BG_WHITE = "\033[47m";
 
-constexpr const char* BOLD_BLACK   = "\033[1;30m";
-constexpr const char* BOLD_RED     = "\033[1;31m";
-constexpr const char* BOLD_GREEN   = "\033[1;32m";
-constexpr const char* BOLD_YELLOW  = "\033[1;33m";
-constexpr const char* BOLD_BLUE    = "\033[1;34m";
+constexpr const char* BOLD_BLACK = "\033[1;30m";
+constexpr const char* BOLD_RED = "\033[1;31m";
+constexpr const char* BOLD_GREEN = "\033[1;32m";
+constexpr const char* BOLD_YELLOW = "\033[1;33m";
+constexpr const char* BOLD_BLUE = "\033[1;34m";
 constexpr const char* BOLD_MAGENTA = "\033[1;35m";
-constexpr const char* BOLD_CYAN    = "\033[1;36m";
-constexpr const char* BOLD_WHITE   = "\033[1;37m";
+constexpr const char* BOLD_CYAN = "\033[1;36m";
+constexpr const char* BOLD_WHITE = "\033[1;37m";
 
 }  // namespace VCDP_NAMESPACE::color

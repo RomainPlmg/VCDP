@@ -2,23 +2,19 @@
 #include <atomic>
 #include <csignal>
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
 #include "vcdp/VCDP.hpp"
 
-constexpr std::string SECTION_SEPARATOR = "\n\n";
-
-std::atomic_bool stop_requested = false;
+constexpr const char* SECTION_SEPARATOR = "\n\n";
 
 void PrintScope(const vcdp::VCDScope* scope, std::vector<bool> last_flags);
 void PrintSectionBanner(const std::string& title);
-void signal_callback_handler(int signum);
 
 int main(const int argc, char const* argv[]) {
-    std::signal(SIGINT, signal_callback_handler);
-    // Enable UTF-8 encoding for Windows
 #ifdef _WIN32
     system("chcp 65001 > nul");
 #endif
@@ -42,24 +38,25 @@ int main(const int argc, char const* argv[]) {
         return 1;
     }
 
-    vcdp::VCDParser parser;
-    auto trace = parser.Parse(file_path);
-
-    if (program["--verbose"] == true) {
-        for (const auto& msg : parser.GetResult().errors) {
-            std::cerr << vcdp::color::RED << msg << vcdp::color::RESET << std::endl;
-        }
-    }
-
-    if (trace == nullptr) {
-        std::cerr << vcdp::color::RED << "Parsing fail" << vcdp::color::RESET << std::endl;
-        return 1;
-    }
+    vcdp::VCDFile trace;
+    std::ifstream stream(file_path);
 
     if (program.is_used("--tree")) {
         PrintSectionBanner("VCD SST");
+
+        stream.clear();
+        stream.seekg(0);
+        vcdp::VCDParser parser;
+        parser.parseHeader(stream, &trace, file_path);
+
+        if (program["--verbose"] == true) {
+            for (const auto& msg : parser.GetResult().errors) {
+                std::cerr << vcdp::color::RED << msg << vcdp::color::RESET << std::endl;
+            }
+        }
+
         std::vector<vcdp::VCDScope*> top_scopes;
-        for (auto& scope : trace->GetScopes()) {
+        for (auto& scope : trace.getScopes()) {
             // Top scopes
             if (scope->parent == nullptr) top_scopes.push_back(scope.get());
         }
@@ -73,25 +70,48 @@ int main(const int argc, char const* argv[]) {
 
     if (program.is_used("--stats")) {
         PrintSectionBanner("VCD Stats");
-        std::cout << "Scopes: " << trace->GetScopes().size() << std::endl;
-        std::cout << "Signals: " << trace->GetSignals().size() << std::endl;
-        std::cout << "Timescale: " << trace->time_resolution << vcdp::utils::VCDTimeUnit2String(trace->time_units) << std::endl;
-        std::cout << "Date: " << trace->date << std::endl;
-        std::cout << "Version: " << trace->version << std::endl;
+
+        stream.clear();
+        stream.seekg(0);
+        vcdp::VCDParser parser;
+        parser.parseHeader(stream, &trace, file_path);
+
+        if (program["--verbose"] == true) {
+            for (const auto& msg : parser.GetResult().errors) {
+                std::cerr << vcdp::color::RED << msg << vcdp::color::RESET << std::endl;
+            }
+        }
+
+        std::cout << "Scopes: " << trace.getScopes().size() << std::endl;
+        std::cout << "Signals: " << trace.getSignals().size() << std::endl;
+        std::cout << "Timescale: " << trace.time_resolution << vcdp::utils::vcdTimeUnit2String(trace.time_units) << std::endl;
+        std::cout << "Date: " << trace.date << std::endl;
+        std::cout << "Version: " << trace.version << std::endl;
         std::cout << SECTION_SEPARATOR;
     }
 
     if (program.is_used("--symbol")) {
         const auto symbol = program.get<std::string>("--symbol");
+        stream.clear();
+        stream.seekg(0);
+        vcdp::VCDParser parser;
+        parser.parse(file_path, &trace);
+
+        if (program["--verbose"] == true) {
+            for (const auto& msg : parser.GetResult().errors) {
+                std::cerr << vcdp::color::RED << msg << vcdp::color::RESET << std::endl;
+            }
+        }
+
+        const auto& signal = trace.getSignal(symbol);
 
         try {
-            const auto& signal = trace->GetSignal(symbol);
-
             if (signal == nullptr) {
                 const std::string msg = "Signal hash \'" + symbol + "\' doesn't exists.";
                 throw std::runtime_error(msg);
             }
 
+            // Print banner
             std::string banner = "VCD Chrono --> " + signal->reference;
             if (signal->lindex > -1)
                 banner += "[" + std::to_string(signal->lindex) + ":" + std::to_string(signal->rindex) + "]";
@@ -99,31 +119,21 @@ int main(const int argc, char const* argv[]) {
                 banner += "[" + std::to_string(signal->rindex) + "]";
             PrintSectionBanner(banner);
 
-            const auto& signal_values = trace->GetSignalValues(symbol);
-            for (size_t i = 0; i < signal_values->size(); i++) {
-                if (stop_requested) {
-                    std::cout << vcdp::color::RESET << std::endl;
-                    std::cout << "Exiting using Ctrl-C" << std::endl;
-                    return (128 + SIGINT);
-                }
-                const auto& [time, value] = signal_values->at(i);
-                std::cout << "# " << time << " " << vcdp::color::YELLOW << vcdp::utils::VCDTimeUnit2String(trace->time_units) << vcdp::color::RESET
-                          << " -> " << value << std::endl;
-                if (i % 500 == 0 && i != 0) {
-                    std::cout << "Press Enter to continue...";
-                    std::cin.get();
-                }
+            // Get timestamps
+            const auto& timestamps = trace.getSignalTimestamps(symbol);
+
+            for (size_t i = 0; i < timestamps.size(); i++) {
+                vcdp::VCDValue value = trace.getSignalValue(symbol, timestamps[i]);
+                std::cout << "# " << timestamps[i] << " " << vcdp::color::YELLOW << vcdp::utils::vcdTimeUnit2String(trace.time_units)
+                          << vcdp::color::RESET << " -> " << value << std::endl;
             }
         } catch (std::exception& e) {
             std::cerr << vcdp::color::RED << "Error: " << e.what() << vcdp::color::RESET << std::endl;
         }
     }
 
-#ifndef _NDEBUG
-    trace.reset();
-    std::cout << "\n[DEBUG] Press any key to exit...";
+    std::cout << "\nPress any key to exit...";
     std::cin.get();
-#endif
 
     return 0;
 }
@@ -143,10 +153,8 @@ void PrintScope(const vcdp::VCDScope* scope, std::vector<bool> last_flags) {
         for (auto&& last_flag : last_flags) {
             std::cout << (last_flag ? "    " : "│   ");
         }
-
         const bool last_signal = (i == scope->signals.size() - 1) && scope->children.empty();
         std::cout << (last_signal ? "└── " : "├── ");
-
         auto& signal = scope->signals.at(i);
         std::stringstream bit_index;
         if (signal->lindex > -1)
@@ -157,7 +165,7 @@ void PrintScope(const vcdp::VCDScope* scope, std::vector<bool> last_flags) {
             bit_index << "";
 
         std::cout << vcdp::color::GREEN << signal->reference << vcdp::color::RESET << " : " << vcdp::color::BLUE
-                  << vcdp::utils::VCDVarType2String(signal->type) << " " << vcdp::color::RED << bit_index.str() << vcdp::color::RESET << "("
+                  << vcdp::utils::vcdVarType2String(signal->type) << " " << vcdp::color::RED << bit_index.str() << vcdp::color::RESET << "("
                   << vcdp::color::YELLOW << "id" << vcdp::color::RESET << ": " << signal->hash << ")" << std::endl;
     }
 
@@ -175,5 +183,3 @@ void PrintSectionBanner(const std::string& title) {
     std::cout << "[ " << title << " ]\n";
     std::cout << "------------------------------------------\n";
 }
-
-void signal_callback_handler(int signum) { stop_requested = true; }

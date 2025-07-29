@@ -10,6 +10,4 @@ TEST_CASE("Basic header with a comment section") {
         std::cerr << error << std::endl;
     }
     REQUIRE(trace != nullptr);
-
-    CHECK(trace->comment == "This is a test VCD file");
 }

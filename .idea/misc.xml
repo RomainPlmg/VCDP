@@ -4,14 +4,4 @@
     <option name="pythonIntegrationState" value="YES" />
   </component>
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
-  <component name="CidrRootsConfiguration">
-    <sourceRoots>
-      <file path="$PROJECT_DIR$/src" />
-      <file path="$PROJECT_DIR$/src/vcdp" />
-      <file path="$PROJECT_DIR$/tests" />
-    </sourceRoots>
-    <libraryRoots>
-      <file path="$PROJECT_DIR$/libs" />
-    </libraryRoots>
-  </component>
 </project>

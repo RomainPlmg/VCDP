@@ -41,38 +41,12 @@ struct var_name : identifier {};
 
 // Numbers & values
 struct number : pegtl::plus<pegtl::ascii::digit> {};
-struct decimal_number : pegtl::seq<pegtl::star<pegtl::ascii::digit>, pegtl::opt<pegtl::seq<pegtl::one<'.'>, pegtl::plus<pegtl::ascii::digit>>>> {};
-struct real_number : pegtl::seq<
-    pegtl::opt<pegtl::one<'-'>>,
-    pegtl::must<decimal_number>,
-    pegtl::opt<pegtl::seq<
-        pegtl::sor<pegtl::one<'e'>, pegtl::one<'E'>>,
-        number>>
-> {};
 struct time_number : pegtl::sor<
     TAO_PEGTL_STRING("1"),
     TAO_PEGTL_STRING("10"),
     TAO_PEGTL_STRING("100")
 > {};
 struct var_size : number {};
-struct scalar_value : pegtl::sor<
-    TAO_PEGTL_STRING("0"),
-    TAO_PEGTL_STRING("1"),
-    TAO_PEGTL_STRING("x"),
-    TAO_PEGTL_STRING("X"),
-    TAO_PEGTL_STRING("z"),
-    TAO_PEGTL_STRING("Z"),
-    TAO_PEGTL_STRING("u"),
-    TAO_PEGTL_STRING("U"),
-    TAO_PEGTL_STRING("w"),
-    TAO_PEGTL_STRING("W"),
-    TAO_PEGTL_STRING("l"),
-    TAO_PEGTL_STRING("L"),
-    TAO_PEGTL_STRING("h"),
-    TAO_PEGTL_STRING("H"),
-    TAO_PEGTL_STRING("-")
-> {};
-struct binary_vector : pegtl::plus<scalar_value> {};
 
 // Declaration keywords
 struct dkw_comment : TAO_PEGTL_STRING("$comment") {};
@@ -83,12 +57,6 @@ struct dkw_timescale : TAO_PEGTL_STRING("$timescale") {};
 struct dkw_upscope : TAO_PEGTL_STRING("$upscope") {};
 struct dkw_var : TAO_PEGTL_STRING("$var") {};
 struct dkw_version : TAO_PEGTL_STRING("$version") {};
-
-// Simulation keywords
-struct skw_dumpall : TAO_PEGTL_STRING("$dumpall") {};
-struct skw_dumpoff : TAO_PEGTL_STRING("$dumpoff") {};
-struct skw_dumpon : TAO_PEGTL_STRING("$dumpon") {};
-struct skw_dumpvars : TAO_PEGTL_STRING("$dumpvars") {};
 
 struct time_unit : pegtl::sor<
     TAO_PEGTL_STRING("s"),
@@ -231,70 +199,13 @@ struct declaration_command : pegtl::sor<
     command_version
 > {};
 
-struct timestamp_number : number {};
-struct timestamp : pegtl::seq<pegtl::one<'#'>, pegtl::must<timestamp_number>> {};
-struct scalar_value_change : pegtl::seq<scalar_value, whitespaces, pegtl::must<var_identifier>> {};
-
-struct binary_vector_prefix : pegtl::sor<pegtl::one<'b'>, pegtl::one<'B'>> {};
-struct real_vector_prefix : pegtl::sor<pegtl::one<'r'>, pegtl::one<'R'>> {};
-struct vector_value_change : pegtl::sor<
-    pegtl::seq<
-        binary_vector_prefix,
-        pegtl::must<binary_vector>,
-        whitespaces, 
-        pegtl::must<var_identifier>
-    >,
-    pegtl::seq<
-        real_vector_prefix,
-        pegtl::must<real_number>,
-        whitespaces,
-        pegtl::must<var_identifier>
-    >
-> {};
-
-struct command_dumpall : pegtl::seq<
-    skw_dumpall,
-    pegtl::must<mandatory_space>,
-    pegtl::star<pegtl::sor<scalar_value_change, vector_value_change>, pegtl::must<mandatory_space>>,
-    pegtl::must<kw_end>
-> {};
-struct command_dumpoff : pegtl::seq<
-    skw_dumpoff,
-    pegtl::must<mandatory_space>,
-    pegtl::star<pegtl::sor<scalar_value_change, vector_value_change>, pegtl::must<mandatory_space>>,
-    pegtl::must<kw_end>
-> {};
-struct command_dumpon : pegtl::seq<
-    skw_dumpon,
-    pegtl::must<mandatory_space>,
-    pegtl::star<pegtl::sor<scalar_value_change, vector_value_change>, pegtl::must<mandatory_space>>,
-    pegtl::must<kw_end>
-> {};
-struct command_dumpvars : pegtl::seq<
-    skw_dumpvars,
-    pegtl::must<mandatory_space>,
-    pegtl::star<pegtl::sor<scalar_value_change, vector_value_change>, pegtl::must<mandatory_space>>,
-    pegtl::must<kw_end>
-> {};
-
-struct simulation_command : pegtl::sor<
-    timestamp,
-    scalar_value_change,
-    vector_value_change,
-    command_dumpall,
-    command_dumpoff,
-    command_dumpon,
-    command_dumpvars
-> {};
-
-
-// Sections
 struct declaration_line : pegtl::seq<
     whitespaces,
     pegtl::not_at<command_enddefinitions>,
     pegtl::must<declaration_command>,
     pegtl::must<mandatory_space>
 > {};
+
 struct declaration_section : pegtl::seq<
     whitespaces,
     pegtl::star<declaration_line>,
@@ -302,24 +213,8 @@ struct declaration_section : pegtl::seq<
     whitespaces
 > {};
 
-struct simulation_line : pegtl::seq<
-    whitespaces,
-    pegtl::not_at<eof>,
-    pegtl::must<simulation_command>,
-    whitespaces
-> {};
-struct simulation_section : pegtl::seq<
-    whitespaces,
-    pegtl::star<simulation_line>,
-    whitespaces
-> {};
-
-// Complete file structure
-struct vcd_file : pegtl::seq<pegtl::must<declaration_section>, pegtl::must<simulation_section>> {};
-
 // Entry point
-struct grammar : pegtl::seq<vcd_file, eof> {};
-struct full_grammar : pegtl::must<grammar> {};
+struct grammar : pegtl::must<declaration_section> {};
 
 // clang-format on
 

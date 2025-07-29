@@ -1,10 +1,9 @@
 #pragma once
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
-#include <variant>
 #include <vector>
-#include <memory>
 
 #include "Config.hpp"
 
@@ -25,16 +24,16 @@ using VCDScopeName = std::string;
 using VCDSignalHash = std::string;
 
 /// @brief Represents a single instant in time in a trace
-using VCDTime = uint64_t;
+using VCDTime = uint32_t;
 
 /// @brief Specifies the timing resolution along with VCDTimeUnit
-using VCDTimeRes = uint32_t;
+using VCDTimeRes = uint8_t;
 
 /// @brief Width in bits of a signal.
 using VCDSignalSize = uint32_t;
 
 /// @brief Represents the four-state signal values of a VCD file.
-enum class VCDBit {
+enum class VCDBit : unsigned char {
     VCD_0 = 0,   //!< Logic zero
     VCD_1 = 1,   //!< Logic one
     VCD_X = 2,   //!< Unknown
@@ -52,11 +51,8 @@ using VCDBitVector = std::vector<VCDBit>;
 /// @brief Using to identify a real number as stored in a VCD.
 using VCDReal = double;
 
-/// @brief Variant type for a signal's value: bit, vector, or real.
-using VCDValueVariant = std::variant<VCDBit, VCDBitVector, VCDReal>;
-
 /// @brief Describes how a signal value is represented in the VCD trace.
-enum class VCDValueType {
+enum class VCDValueType : unsigned char {
     VCD_SCALAR,  //!< Single VCDBit
     VCD_VECTOR,  //!< Vector of VCDBit
     VCD_REAL     //!< IEEE Floating point (64bit).
@@ -106,11 +102,73 @@ struct VCDScope;
 struct VCDSignal {
     VCDSignalHash hash;
     VCDSignalReference reference;
-    VCDScope* scope;
-    VCDSignalSize size;
-    VCDVarType type;
-    int lindex;  // -1 if no brackets, otherwise [lindex] or [lindex:rindex]
-    int rindex;  // -1 if not [lindex:rindex]
+    VCDScope* scope = nullptr;
+    VCDSignalSize size = 0;
+    VCDVarType type = VCDVarType::VCD_VAR_UNKNOWN;
+    int lindex = -1;  // -1 if no brackets, otherwise [lindex] or [lindex:rindex]
+    int rindex = -1;  // -1 if not [lindex:rindex]
+
+    std::vector<VCDBit> bits = {};
+    std::vector<VCDBit*> vectors = {};
+    std::vector<VCDReal> reals = {};
+
+    std::vector<VCDTime> timestamps;
+
+    ~VCDSignal() {
+        for (const auto* ptr : vectors) {
+            delete[] ptr;
+        }
+    }
+
+    VCDSignal() = default;
+    VCDSignal(const VCDSignal& other)
+        : hash(other.hash),
+          reference(other.reference),
+          scope(other.scope),
+          size(other.size),
+          type(other.type),
+          lindex(other.lindex),
+          rindex(other.rindex),
+          bits(other.bits),
+          reals(other.reals),
+          timestamps(other.timestamps) {
+        // Deep copy
+        vectors.clear();
+        vectors.reserve(other.vectors.size());
+        for (const auto ptr : other.vectors) {
+            auto new_array = new VCDBit[size];
+            std::copy_n(ptr, size, new_array);
+            vectors.push_back(new_array);
+        }
+    }
+
+    VCDSignal& operator=(const VCDSignal& other) {
+        if (this == &other) return *this;
+        for (const auto* ptr : vectors) {
+            delete[] ptr;
+        }
+        hash = other.hash;
+        reference = other.reference;
+        scope = other.scope;
+        size = other.size;
+        type = other.type;
+        lindex = other.lindex;
+        rindex = other.rindex;
+        bits = other.bits;
+        reals = other.reals;
+        timestamps = other.timestamps;
+
+        // Deep copy
+        vectors.clear();
+        vectors.reserve(other.vectors.size());
+        for (const auto vector : other.vectors) {
+            auto new_array = new VCDBit[size];
+            std::copy_n(vector, size, new_array);
+            vectors.push_back(new_array);
+        }
+
+        return *this;
+    }
 };
 
 /// @brief Represents a scope type, scope name pair and all of its child signals.

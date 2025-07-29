@@ -22,6 +22,7 @@ set(test_sources
         "header_indexed_var_size_inconsistent.cpp"
         "header_ranged_var_size_inconsistent.cpp"
         "header_var_types.cpp"
+        "big_file.cpp"
 )
 
 # file(GLOB ...) is used to validate the above list of test_sources

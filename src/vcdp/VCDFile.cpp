@@ -1,40 +1,41 @@
 #include "vcdp/VCDFile.hpp"
 
+#include <ranges>
+#include <sstream>
+
 #include "vcdp/VCDTypes.hpp"
 #include "vcdp/VCDValue.hpp"
 
 namespace VCDP_NAMESPACE {
 
-void VCDFile::AddScope(std::unique_ptr<VCDScope>& scope) {
-    VCDScope* p_scope = scope.get();
-    m_Scopes.push_back(std::move(scope));
+void VCDFile::addScope(std::unique_ptr<VCDScope> scope) {
+    scopes_.push_back(std::move(scope));
+    VCDScope* p_scope = scopes_.back().get();
+
     if (current_scope != nullptr) current_scope->children.push_back(p_scope);
     current_scope = p_scope;
 }
 
-void VCDFile::AddSignal(std::unique_ptr<VCDSignal>& signal) {
-    VCDSignal* p_signal = signal.get();
-    m_Signals.push_back(std::move(signal));
-    current_scope->signals.push_back(p_signal);
+void VCDFile::addSignal(std::unique_ptr<VCDSignal> signal) {
+    const VCDSignalHash hash = signal->hash;
 
-    // Add timestamp entry
-    if (!m_ValMap.contains(p_signal->hash)) {
-        // Value will be populated later
-        m_ValMap[p_signal->hash].clear();
+    if (!signals_.contains(signal->hash)) {
+        signals_[hash] = std::move(signal);
     }
+
+    VCDSignal* p_signal = signals_[hash].get();
+    current_scope->signals.push_back(p_signal);
 }
 
-void VCDFile::AddTimestamp(const VCDTime time) { m_Times.push_back(time); }
-
-VCDScope* VCDFile::GetScope(const VCDScopeName& name) const {
-    for (const auto& scope : m_Scopes) {
+VCDScope* VCDFile::getScope(const VCDScopeName& name) const {
+    for (const auto& scope : scopes_) {
         if (scope->name == name) return scope.get();
     }
     return nullptr;
 }
 
-VCDSignal* VCDFile::GetSignal(const VCDSignalHash& hash) const {
-    for (const auto& signal : m_Signals) {
+VCDSignal* VCDFile::getSignal(const VCDSignalHash& hash) const {
+    for (const auto& signal : signals_ | std::views::values) {
         if (signal->hash == hash) {
             return signal.get();
         }
@@ -42,41 +43,86 @@ VCDSignal* VCDFile::GetSignal(const VCDSignalHash& hash) const {
     return nullptr;
 }
 
-void VCDFile::AddSignalValue(VCDTimedValue time_val, const VCDSignalHash& hash) { m_ValMap[hash].push_back(std::move(time_val)); }
+void VCDFile::addSignalValue(const VCDTime delta, const VCDValue& val, const VCDSignalHash& hash) {
+    if (const auto& it = signals_.find(hash); it == signals_.end()) {
+        std::ostringstream msg;
+        msg << "Unable to find the signal hash \'" << hash << "\'";
+        throw std::runtime_error(msg.str());
+    }
 
-VCDValue* VCDFile::GetSignalValue(const VCDSignalHash& hash, const VCDTime time, const bool erase_prior) {
-    const auto it = m_ValMap.find(hash);
-    if (it == m_ValMap.end()) return nullptr;
-
-    auto& values = it->second;
-    auto erase_until = values.begin();
-    if (values.empty()) return nullptr;
-
-    VCDValue* rt = nullptr;
-
-    for (auto value_it = values.begin(); value_it != values.end(); ++value_it) {
-        if (value_it->time <= time) {
-            erase_until = value_it;
-            rt = value_it->value.get();
-        } else {
+    const auto& signal = signals_.at(hash).get();
+    signal->timestamps.push_back(delta);
+    switch (val.type) {
+        case VCDValueType::VCD_SCALAR:
+            signal->bits.push_back(val.scalar);
+            break;
+        case VCDValueType::VCD_VECTOR: {
+            auto* bits = new VCDBit[val.vector_size];
+            std::copy_n(val.vector, val.vector_size, bits);
+            signal->vectors.push_back(bits);
             break;
         }
+        case VCDValueType::VCD_REAL:
+            signal->reals.push_back(val.real);
+            break;
+        default:
+            break;
     }
-
-    if (erase_prior) {
-        // Avoid O(n^2) performance for large sequential scans
-        for (auto i = values.begin(); i != erase_until; ++i) {
-            i->value.reset();
-        }
-        values.erase(values.begin(), erase_until);
-    }
-
-    return rt;
 }
 
-VCDSignalValues* VCDFile::GetSignalValues(const VCDSignalHash& hash) {
-    if (!m_ValMap.contains(hash)) return nullptr;
-    return &m_ValMap.at(hash);
+VCDValue VCDFile::getSignalValue(const VCDSignalHash& hash, const VCDTime time) {
+    const auto it = signals_.find(hash);
+    if (it == signals_.end()) {
+        std::ostringstream msg;
+        msg << "Unable to find the signal hash \'" << hash << "\'";
+        throw std::runtime_error(msg.str());
+    }
+    const auto& signal = it->second;
+
+    if (signal->timestamps.empty()) {
+        return {};
+    }
+
+    size_t index = 0;
+
+    for (const auto& timestamp : signal->timestamps) {
+        if (timestamp >= time) {
+            break;
+        }
+        index++;
+    }
+
+    if (!signal->bits.empty()) {
+        return VCDValue(signal->bits.at(index));
+    }
+    if (!signal->vectors.empty()) {
+        return VCDValue(signal->vectors.at(index), signal->size);
+    }
+    if (!signal->reals.empty()) {
+        return VCDValue(signal->reals.at(index));
+    }
+
+    return {};
+}
+
+std::vector<VCDTime>& VCDFile::getSignalTimestamps(const VCDSignalHash& hash) {
+    const auto it = signals_.find(hash);
+    if (it == signals_.end()) {
+        std::ostringstream msg;
+        msg << "Unable to find the signal hash \'" << hash << "\'";
+        throw std::runtime_error(msg.str());
+    }
+    const auto& signal = it->second;
+    return signal->timestamps;
+}
+
+bool VCDFile::exists(const VCDSignalHash& hash) const {
+    if (const auto it = signals_.find(hash); it == signals_.end()) {
+        std::ostringstream msg;
+        msg << "Unable to find the signal hash \'" << hash << "\'";
+        return false;
+    }
+    return true;
 }
 
 }  // namespace VCDP_NAMESPACE

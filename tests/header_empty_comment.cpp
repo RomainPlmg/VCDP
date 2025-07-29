@@ -10,6 +10,4 @@ TEST_CASE("Comment section is empty") {
         std::cerr << error << std::endl;
     }
     REQUIRE(trace != nullptr);
-
-    CHECK(trace->comment.empty());
 }

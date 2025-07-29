@@ -1,0 +1,444 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BackendCodeEditorMiscSettings">
+    <option name="/Default/Environment/Hierarchy/GeneratedFilesCacheKey/Timestamp/@EntryValue" value="6" type="long" />
+    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
+  </component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
+  <component name="CMakeProjectFlavorService">
+    <option name="flavorId" value="CMakePlainProjectFlavor" />
+  </component>
+  <component name="CMakeReloadState">
+    <option name="reloaded" value="true" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated>
+      <config projectName="VCDP" targetName="vcdp-test-empty_file" />
+      <config projectName="VCDP" targetName="vcdp-test-header_oneline" />
+      <config projectName="VCDP" targetName="vcdp-test-header_incomplete" />
+      <config projectName="VCDP" targetName="vcdp-test-big_file" />
+      <config projectName="VCDP" targetName="vcdp-test-header_multiline_comment" />
+      <config projectName="VCDP" targetName="vcdp-test-header_simple_scope" />
+      <config projectName="VCDP" targetName="vcdp-test-header_stuck_timescale" />
+      <config projectName="VCDP" targetName="doctest_with_main" />
+      <config projectName="VCDP" targetName="vcdp-test-header_tabed" />
+      <config projectName="VCDP" targetName="vcdp-test-header_var_types" />
+      <config projectName="VCDP" targetName="vcdp-test-header_var_without_scope" />
+      <config projectName="VCDP" targetName="vcdp-test-header_nested_scopes" />
+      <config projectName="VCDP" targetName="vcdp-test-header_missing_upscope" />
+      <config projectName="VCDP" targetName="vcdp-test-header_empty_comment" />
+      <config projectName="VCDP" targetName="vcdp-test-header_comment" />
+      <config projectName="VCDP" targetName="vcdp-test-header_indexed_var" />
+      <config projectName="VCDP" targetName="vcdp-test-header_simple" />
+      <config projectName="VCDP" targetName="vcdp" />
+      <config projectName="VCDP" targetName="vcdp-test-header_ranged_var" />
+      <config projectName="VCDP" targetName="vcdplib" />
+      <config projectName="VCDP" targetName="vcdp-test-header_ranged_var_size_inconsistent" />
+      <config projectName="VCDP" targetName="vcdp-test-header_multi_topscopes" />
+      <config projectName="VCDP" targetName="vcdp-test-header_indexed_var_size_inconsistent" />
+      <config projectName="VCDP" targetName="vcdp-test-header_simple_var" />
+      <config projectName="VCDP" targetName="vcdp-test-header_missing_scope" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Release" ENABLED="true" CONFIG_NAME="Release" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e29d8eb9-b9e3-4842-9ba1-64adc3647723" name="Changes" comment="Optimize memory consumption">
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/big_file.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/data/big_file.vcd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/VCDP.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/VCDP.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/launch.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/vcdp/Utils.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/vcdp/Utils.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/vcdp/VCDActions.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/vcdp/VCDActions.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/vcdp/VCDFile.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/vcdp/VCDFile.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/vcdp/VCDLexical.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/vcdp/VCDLexical.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/vcdp/VCDParser.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/vcdp/VCDParser.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/vcdp/VCDTypes.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/vcdp/VCDTypes.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/vcdp/VCDValue.hpp" beforeDir="false" afterPath="$PROJECT_DIR$/include/vcdp/VCDValue.hpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/argparse" beforeDir="false" afterPath="$PROJECT_DIR$/libs/argparse" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/argparse/clang_format.bash" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/doctest" beforeDir="false" afterPath="$PROJECT_DIR$/libs/doctest" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/doctest/scripts/bench/bench.py" beforeDir="false" afterPath="$PROJECT_DIR$/libs/doctest/scripts/bench/bench.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/doctest/scripts/bench/run_all.py" beforeDir="false" afterPath="$PROJECT_DIR$/libs/doctest/scripts/bench/run_all.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/pegtl" beforeDir="false" afterPath="$PROJECT_DIR$/libs/pegtl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/pegtl/src/test/pegtl/file_äöü_data.txt" beforePathEscaped="$PROJECT_DIR$/libs/pegtl/src/test/pegtl/file_äöü𝄞_data.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vcdp/Utils.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/vcdp/Utils.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vcdp/VCDFile.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/vcdp/VCDFile.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vcdp/VCDParser.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/vcdp/VCDParser.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vcdp/VCDValue.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/tests/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/header_comment.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/header_comment.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/header_empty_comment.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/header_empty_comment.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/header_multiline_comment.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/header_multiline_comment.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/header_oneline.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/header_oneline.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/header_tabed.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/header_tabed.cpp" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Release" />
+  <component name="FormatOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;RomainPlmg&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/RomainPlmg/VCDP.git&quot;,
+    &quot;accountId&quot;: &quot;3047d4e5-c661-4eb3-8f2a-3e29938b113c&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///dummy.cpp" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="OptimizeOnSaveOptions">
+    <option name="myRunOnSave" value="true" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="30YZzbJH72W91mGMYbQqvvzDXLX" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "CMake Application.vcdp.executor": "Debug",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.RadMigrateCodeStyle": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "RunOnceActivity.west.config.association.type.startup.service": "true",
+    "cf.advertisement.text.overridden": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "ctest.advertisement.all.test.configuration.is.created": "true",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "CMakeSettings",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="CMake Application.vcdp">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-big_file" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-big_file" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-big_file" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-empty_file" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-empty_file" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-empty_file" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_comment" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_comment" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_comment" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_empty_comment" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_empty_comment" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_empty_comment" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_incomplete" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_incomplete" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_incomplete" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_indexed_var" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_indexed_var" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_indexed_var" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_indexed_var_size_inconsistent" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_indexed_var_size_inconsistent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_indexed_var_size_inconsistent" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_missing_scope" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_missing_scope" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_missing_scope" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_missing_upscope" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_missing_upscope" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_missing_upscope" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_multi_topscopes" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_multi_topscopes" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_multi_topscopes" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_multiline_comment" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_multiline_comment" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_multiline_comment" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_nested_scopes" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_nested_scopes" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_nested_scopes" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_oneline" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_oneline" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_oneline" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_ranged_var" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_ranged_var" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_ranged_var" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_ranged_var_size_inconsistent" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_ranged_var_size_inconsistent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_ranged_var_size_inconsistent" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_simple" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_simple" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_simple" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_simple_scope" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_simple_scope" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_simple_scope" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_simple_var" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_simple_var" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_simple_var" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_stuck_timescale" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_stuck_timescale" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_stuck_timescale" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_tabed" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_tabed" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_tabed" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_var_types" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_var_types" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_var_types" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp-test-header_var_without_scope" type="CMakeDoctestTestRunConfigurationType" factoryName="doctest Test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp-test-header_var_without_scope" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp-test-header_var_without_scope" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="doctest_with_main" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="doctest_with_main" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdp" type="CMakeRunConfiguration" factoryName="Application" PROGRAM_PARAMS="--verbose --symbol &quot;#&quot; ..\tests\data\ghdl_counter.vcd" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdp" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VCDP" RUN_TARGET_NAME="vcdp">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="vcdplib" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VCDP" TARGET_NAME="vcdplib" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="All CTest" type="CTestRunConfiguration" factoryName="CTestRun" PROGRAM_PARAMS="--extra-verbose" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" WORKING_DIR="file://$CMakeCurrentLocalGenerationDir$" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_PATH="$CTestCurrentExecutableName$" EXPLICIT_BUILD_TARGET_NAME="all" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.vcdp" />
+      <item itemvalue="CMake Application.vcdplib" />
+      <item itemvalue="CMake Application.doctest_with_main" />
+      <item itemvalue="CTest Application.All CTest" />
+      <item itemvalue="Doctest.vcdp-test-big_file" />
+      <item itemvalue="Doctest.vcdp-test-empty_file" />
+      <item itemvalue="Doctest.vcdp-test-header_comment" />
+      <item itemvalue="Doctest.vcdp-test-header_empty_comment" />
+      <item itemvalue="Doctest.vcdp-test-header_incomplete" />
+      <item itemvalue="Doctest.vcdp-test-header_indexed_var" />
+      <item itemvalue="Doctest.vcdp-test-header_indexed_var_size_inconsistent" />
+      <item itemvalue="Doctest.vcdp-test-header_missing_scope" />
+      <item itemvalue="Doctest.vcdp-test-header_missing_upscope" />
+      <item itemvalue="Doctest.vcdp-test-header_multi_topscopes" />
+      <item itemvalue="Doctest.vcdp-test-header_multiline_comment" />
+      <item itemvalue="Doctest.vcdp-test-header_nested_scopes" />
+      <item itemvalue="Doctest.vcdp-test-header_oneline" />
+      <item itemvalue="Doctest.vcdp-test-header_ranged_var" />
+      <item itemvalue="Doctest.vcdp-test-header_ranged_var_size_inconsistent" />
+      <item itemvalue="Doctest.vcdp-test-header_simple" />
+      <item itemvalue="Doctest.vcdp-test-header_simple_scope" />
+      <item itemvalue="Doctest.vcdp-test-header_simple_var" />
+      <item itemvalue="Doctest.vcdp-test-header_stuck_timescale" />
+      <item itemvalue="Doctest.vcdp-test-header_tabed" />
+      <item itemvalue="Doctest.vcdp-test-header_var_types" />
+      <item itemvalue="Doctest.vcdp-test-header_var_without_scope" />
+    </list>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e29d8eb9-b9e3-4842-9ba1-64adc3647723" name="Changes" comment="" />
+      <created>1753802651965</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1753802651965</updated>
+      <workItem from="1753802654068" duration="3412000" />
+      <workItem from="1753806732651" duration="92000" />
+      <workItem from="1753806839096" duration="605000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VCPKGProject">
+    <isAutomaticCheckingOnLaunch value="false" />
+    <isAutomaticFoundErrors value="true" />
+    <isAutomaticReloadCMake value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Optimize memory consumption" />
+    <option name="LAST_COMMIT_MESSAGE" value="Optimize memory consumption" />
+  </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="CMakeRunConfiguration">
+        <watch expression="signal" />
+      </configuration>
+    </watches-manager>
+  </component>
+</project>

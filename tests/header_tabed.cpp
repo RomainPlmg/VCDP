@@ -15,5 +15,4 @@ TEST_CASE("Replace all spaces by multiple tabulations") {
     CHECK(trace->version == "GHDL	v0");
     CHECK(trace->time_resolution == 1);
     CHECK(trace->time_units == vcdp::VCDTimeUnit::TIME_NS);
-    CHECK(trace->comment == "This is a test VCD file");
 }

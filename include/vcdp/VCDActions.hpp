@@ -29,7 +29,7 @@ struct VCDScopeBuilder {
 
         Reset();
 
-        return scope;
+        return std::move(scope);
     }
 };
 
@@ -53,7 +53,6 @@ struct VCDSignalBuilder {
     }
 
     std::unique_ptr<VCDSignal> Build(VCDScope* scope) {
-        std::vector<std::unique_ptr<VCDSignal>> result(size);
         auto signal = std::make_unique<VCDSignal>();
         signal->reference = reference;
         signal->type = type;
@@ -70,43 +69,9 @@ struct VCDSignalBuilder {
 };
 
 struct ActionState {
-    bool in_header = true;
-    VCDTime current_time = 0;
-    bool time_init = false;
-    VCDValueType current_value_type = VCDValueType::VCD_SCALAR;
-    VCDBit current_scalar = VCDBit::VCD_X;
-    VCDBitVector current_bit_vector;
-    VCDReal current_real = 0.0;
     VCDScopeBuilder current_scope_builder;
     VCDSignalBuilder current_signal_builder;
-
-    void Reset() {
-        in_header = true;
-        current_time = 0;
-        time_init = false;
-        current_value_type = VCDValueType::VCD_SCALAR;
-        current_scalar = VCDBit::VCD_X;
-        current_bit_vector.clear();
-        current_real = 0.0;
-    }
 };
-
-inline std::string NormalizeSpaces(const std::string& input) {
-    std::istringstream iss(input);
-    std::ostringstream oss;
-    std::string word;
-
-    bool first = true;
-    while (iss >> word) {
-        if (!first) {
-            oss << " ";
-        }
-        oss << word;
-        first = false;
-    }
-
-    return oss.str();
-}
 
 template <typename Rule>
 struct action : pegtl::nothing<Rule> {};
@@ -191,7 +156,7 @@ struct action<lexical::scope_end> {
     static void apply(const Input& in, VCDFile& file, ActionState& state) {
         if (state.current_scope_builder.IsComplete()) {
             auto scope = state.current_scope_builder.Build(file.current_scope);
-            file.AddScope(scope);
+            file.addScope(std::move(scope));
         }
     }
 };
@@ -267,29 +232,8 @@ template <>
 struct action<lexical::var_identifier> {
     template <typename Input>
     static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        std::string hash = in.string();
-        if (state.in_header) {
-            state.current_signal_builder.hash = hash;
-        } else {
-            // If signal doesn't exist
-            if (!file.Exists(hash)) {
-                std::ostringstream msg;
-                msg << "Unknown hash \'" << hash << "\'.";
-                throw pegtl::parse_error(msg.str(), in);
-            }
-
-            // Register value change
-            VCDTimedValue timed_value = {};
-            if (state.current_value_type == VCDValueType::VCD_SCALAR) {
-                timed_value = {state.current_time, std::make_unique<VCDValue>(state.current_scalar)};
-            } else if (state.current_value_type == VCDValueType::VCD_VECTOR) {
-                timed_value = {state.current_time, std::make_unique<VCDValue>(state.current_bit_vector)};
-            } else {
-                timed_value = {state.current_time, std::make_unique<VCDValue>(state.current_real)};
-            }
-
-            file.AddSignalValue(std::move(timed_value), hash);
-        }
+        const std::string hash = in.string();
+        state.current_signal_builder.hash = hash;
     }
 };
 
@@ -329,27 +273,32 @@ struct action<lexical::var_end> {
                 throw pegtl::parse_error(msg.str(), in);
             }
 
-            // if (signal->index != -1) {
-            //     if (size > 1) {
-            //         // Range size exception
-            //         int range_size = std::abs(size - 1 - signal->index) + 1;
-            //         if (range_size != size) {
-            //             std::ostringstream msg;
-            //             msg << "Range size mismatch for signal '" << signal->reference << "': range [" << size - 1 << ":" << signal->index
-            //                 << "] implies size " << range_size << " but declared size is " << size;
-            //             throw pegtl::parse_error(msg.str(), in);
-            //         }
-            //     } else {
-            //         // Single index exception
-            //         if (size != 1) {
-            //             std::ostringstream msg;
-            //             msg << "Size mismatch for signal '" << signal->reference << "': index [" << signal->index
-            //                 << "] implies size 1 but declared size is " << size;
-            //             throw pegtl::parse_error(msg.str(), in);
-            //         }
-            //     }
-            // }
-            file.AddSignal(signal);
+            if (signal->rindex != -1) {
+                if (signal->lindex == -1 && signal->size != -1) {
+                    std::ostringstream msg;
+                    msg << "Size mismatch for signal '" << signal->reference << "': index [" << signal->rindex
+                        << "] implies size 1 but declared size is " << signal->size;
+                    throw pegtl::parse_error(msg.str(), in);
+                }
+                if (signal->size > 1) {
+                    // Range size exception
+                    if (int range_size = std::abs(signal->lindex - signal->rindex) + 1; range_size != signal->size) {
+                        std::ostringstream msg;
+                        msg << "Range size mismatch for signal '" << signal->reference << "': range [" << signal->lindex << ":" << signal->rindex
+                            << "] implies size " << range_size << " but declared size is " << signal->size;
+                        throw pegtl::parse_error(msg.str(), in);
+                    }
+                } else {
+                    // Single index exception
+                    if (signal->size != 1) {
+                        std::ostringstream msg;
+                        msg << "Size mismatch for signal '" << signal->reference << "': index [" << signal->rindex
+                            << "] implies size 1 but declared size is " << signal->size;
+                        throw pegtl::parse_error(msg.str(), in);
+                    }
+                }
+            }
+            file.addSignal(std::move(signal));
         }
     }
 };
@@ -361,96 +310,6 @@ struct action<lexical::command_enddefinitions> {
         if (file.current_scope != nullptr) {
             throw pegtl::parse_error("$upscope declaration expected.", in);
         }
-        state.in_header = false;
-    }
-};
-
-template <>
-struct action<lexical::skw_dumpvars> {
-    template <typename Input>
-    static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        if (!state.time_init) {
-            state.time_init = true;
-            file.AddTimestamp(state.current_time);
-        }
-    }
-};
-
-template <>
-struct action<lexical::scalar_value> {
-    template <typename Input>
-    static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        if (!state.time_init) {
-            throw pegtl::parse_error("Timestamp not initialized. Use \'#0\' or \'$dump...\' keywords", in);
-        }
-
-        VCDBit bit = utils::Char2VCDBit(in.string()[0]);
-        if (state.current_value_type == VCDValueType::VCD_SCALAR) {
-            state.current_scalar = bit;
-        } else if (state.current_value_type == VCDValueType::VCD_VECTOR) {
-            state.current_bit_vector.push_back(bit);
-        }
-    }
-};
-
-template <>
-struct action<lexical::real_number> {
-    template <typename Input>
-    static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        if (!state.time_init) {
-            throw pegtl::parse_error("Timestamp not initialized. Use \'#0\' or \'$dump...\' keywords", in);
-        }
-
-        if (state.current_value_type == VCDValueType::VCD_REAL) {
-            state.current_real = std::stod(in.string());
-        } else {
-            throw pegtl::parse_error("Real number not expected.", in);
-        }
-    }
-};
-
-template <>
-struct action<lexical::binary_vector_prefix> {
-    template <typename Input>
-    static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        state.current_value_type = VCDValueType::VCD_VECTOR;
-        state.current_bit_vector.clear();
-    }
-};
-
-template <>
-struct action<lexical::real_vector_prefix> {
-    template <typename Input>
-    static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        state.current_value_type = VCDValueType::VCD_REAL;
-    }
-};
-
-template <>
-struct action<lexical::vector_value_change> {
-    template <typename Input>
-    static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        state.current_value_type = VCDValueType::VCD_SCALAR;
-    }
-};
-
-template <>
-struct action<lexical::timestamp_number> {
-    template <typename Input>
-    static void apply(const Input& in, VCDFile& file, ActionState& state) {
-        uint64_t time = std::stoull(in.string());
-        if (time == 0) {
-            state.time_init = true;
-        }
-
-        if (time < state.current_time) {
-            std::ostringstream msg;
-            msg << "The current timestamp cannot be less than the previous one. New: " << time << vcdp::utils::VCDTimeUnit2String(file.time_units)
-                << " | Previous: " << state.current_time << vcdp::utils::VCDTimeUnit2String(file.time_units);
-            throw pegtl::parse_error(msg.str(), in);
-        }
-        state.current_time = time;
-        file.AddTimestamp(state.current_time);
     }
 };
 

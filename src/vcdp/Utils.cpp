@@ -3,7 +3,7 @@
 namespace VCDP_NAMESPACE::utils {
 
 // clang-format off
-std::string VCDVarType2String(VCDVarType type)  {
+std::string vcdVarType2String(const VCDVarType type)  {
     switch (type) {
         case VCDVarType::VCD_VAR_UNKNOWN:   return "unknown";
         case VCDVarType::VCD_VAR_EVENT:     return "event";
@@ -27,7 +27,7 @@ std::string VCDVarType2String(VCDVarType type)  {
         default:                            return "invalid";
     }
 }
-std::string VCDTimeUnit2String(VCDTimeUnit unit) {
+std::string vcdTimeUnit2String(const VCDTimeUnit unit) {
     switch (unit) {
     case VCDTimeUnit::TIME_UNKNOWN: return "unknown";
     case VCDTimeUnit::TIME_S:       return "s";
@@ -40,7 +40,7 @@ std::string VCDTimeUnit2String(VCDTimeUnit unit) {
     }
 }
 
-char VCDBit2Char(const VCDBit bit) {
+char vcdBit2Char(const VCDBit bit) {
     switch (bit) {
         case VCDBit::VCD_0  :   return '0';
         case VCDBit::VCD_1  :   return '1';
@@ -55,7 +55,7 @@ char VCDBit2Char(const VCDBit bit) {
     }
 }
 
-VCDBit Char2VCDBit(char bit) {
+VCDBit char2VCDBit(const char bit) {
     switch (bit) {
         case '0':   return VCDBit::VCD_0;
         case '1':   return VCDBit::VCD_1;
@@ -76,7 +76,7 @@ VCDBit Char2VCDBit(char bit) {
     }
 }
 
-const char* BitColor(VCDBit bit) {
+const char* bitColor(const VCDBit bit) {
     switch (bit) {
         case VCDBit::VCD_0  :   return color::GREEN;
         case VCDBit::VCD_1  :   return color::CYAN;

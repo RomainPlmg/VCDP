@@ -36,14 +36,17 @@ struct VCDParseResult {
 
 class VCDParser {
    public:
-    std::unique_ptr<VCDFile> Parse(const std::string& file_path);
+    void parseHeader(std::ifstream& stream, VCDFile* file, const std::string& file_path);
+    void parseValueChange(std::ifstream& stream, VCDFile* file, const std::string& file_path);
+    void parse(const std::string& file_path, VCDFile* file);
 
-    [[nodiscard]] const VCDParseResult& GetResult() const { return m_Result; }
+    [[nodiscard]] const VCDParseResult& GetResult() const { return result_; }
 
    private:
-    std::string m_FilePath;
-    std::unique_ptr<VCDFile> m_File;
-    VCDParseResult m_Result;
+    VCDParseResult result_;
+    VCDFile* file_ = nullptr;
+
+    void parseValueChangeLine(const std::string& line, VCDTime& current_time);
 };
 
 }  // namespace VCDP_NAMESPACE
