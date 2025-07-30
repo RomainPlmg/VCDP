@@ -8,6 +8,7 @@
 #include "vcdp/VCDLexical.hpp"
 
 namespace VCDP_NAMESPACE {
+
 void VCDParser::parseHeader(std::ifstream& stream, VCDFile* file, const std::string& file_path) {
     file_ = file;
     result_.Clear();
@@ -58,10 +59,8 @@ void VCDParser::parseValueChange(std::ifstream& stream, VCDFile* file, const std
     file_ = file;
     result_.Clear();
     constexpr size_t BUFFER_SIZE = 64 * 1024;  // 64 Ko chunks
-    std::array<char, BUFFER_SIZE> buffer;
+    std::array<char, BUFFER_SIZE> buffer{};
     std::string leftover;  // For cutted lines, caused by chunking
-
-    VCDTime current_time = 0;
 
     while (stream.read(buffer.data(), BUFFER_SIZE) || stream.gcount() > 0) {
         const size_t byte_read = stream.gcount();
@@ -78,7 +77,7 @@ void VCDParser::parseValueChange(std::ifstream& stream, VCDFile* file, const std
             std::string line = chunk.substr(line_start, pos - line_start);
 
             // Parse the line
-            parseValueChangeLine(line, current_time);
+            parseValueChangeLine(line);
 
             line_start = pos + 1;
         }
@@ -92,7 +91,7 @@ void VCDParser::parseValueChange(std::ifstream& stream, VCDFile* file, const std
     // Parse the last line of the file (no '\n')
     if (!leftover.empty()) {
         // Parse the line
-        parseValueChangeLine(leftover, current_time);
+        parseValueChangeLine(leftover);
     }
 
     file_ = nullptr;
@@ -120,39 +119,14 @@ size_t VCDParser::findNextLine(const std::string& chunk, size_t start) {
     return std::min(lf_pos, cr_pos);
 }
 
-void VCDParser::parseValueChangeLine(const std::string& line, VCDTime& current_time) const {
+void VCDParser::parseValueChangeLine(const std::string& line) const {
     if (line.empty() || line[0] == '$') return;  // Skip comments/dump commands
 
     // Timestamp
     if (line[0] == '#') {
-        current_time = std::stoull(line.substr(1));
+        const uint64_t current_time = std::stoull(line.substr(1));
         file_->addTimestamp(current_time);
-        return;
-    }
-
-    if (line[0] == 'b') {
-        // Parse bit vector
-        const char* space = strchr(line.c_str(), ' ');
-        if (!space) {
-            return;
-        }
-
-        std::vector<VCDBit> bits;
-        for (const char* p = line.c_str() + 1; p < space; ++p) {
-            // +1 to skip 'b'
-            bits.push_back(utils::char2VCDBit(*p));
-        }
-
-        const size_t hash_start = space - line.c_str() + 1;  // +1 to skip space
-        const VCDSignalHash hash = line.substr(hash_start);
-        file_->addSignalValue(current_time, VCDValue(bits.data(), bits.size()), hash);
-    } else if (line[0] == 'r') {
-        // Parse real
-    } else {
-        // Parse scalar
-        const VCDBit bit = utils::char2VCDBit(line[0]);
-        const VCDSignalHash hash = line.substr(1);
-        file_->addSignalValue(current_time, VCDValue(bit), hash);
     }
 }
+
 }  // namespace VCDP_NAMESPACE

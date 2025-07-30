@@ -8,11 +8,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 string(COMPARE EQUAL "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}" VCDP_STANDALONE)
 option(VCDP_BUILD_TESTS "Build the VCDP test programs" ${VCDP_STANDALONE})
 
+find_package(libdeflate REQUIRED)
+
 if (VCDP_BUILD_TESTS)
     enable_testing()
     add_subdirectory(libs/doctest)
     add_subdirectory(tests)
-endif()
+endif ()
 
 add_subdirectory(libs/pegtl)
 add_subdirectory(libs/argparse)
@@ -31,7 +33,7 @@ target_include_directories(vcdplib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Creating standalone executable
 add_executable(vcdp src/main.cpp)
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(vcdp PRIVATE -fexec-charset=UTF-8)
-endif()
+endif ()
 target_link_libraries(vcdp PUBLIC vcdplib argparse)

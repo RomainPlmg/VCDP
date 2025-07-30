@@ -1,10 +1,10 @@
 #include "vcdp/VCDFile.hpp"
 
+#include <iostream>
 #include <ranges>
 #include <sstream>
 
 #include "vcdp/VCDTypes.hpp"
-#include "vcdp/VCDValue.hpp"
 
 namespace VCDP_NAMESPACE {
 
@@ -17,7 +17,7 @@ void VCDFile::addScope(std::unique_ptr<VCDScope> scope) {
 }
 
 void VCDFile::addSignal(std::unique_ptr<VCDSignal> signal) {
-    const VCDSignalHash hash = signal->hash;
+    const std::string hash = signal->hash;
 
     if (!signals_.contains(signal->hash)) {
         signals_[hash] = std::move(signal);
@@ -29,14 +29,14 @@ void VCDFile::addSignal(std::unique_ptr<VCDSignal> signal) {
 
 void VCDFile::addTimestamp(const uint64_t timestamp) { times_.push_back(timestamp); }
 
-VCDScope* VCDFile::getScope(const VCDScopeName& name) const {
+VCDScope* VCDFile::getScope(const std::string& name) const {
     for (const auto& scope : scopes_) {
         if (scope->name == name) return scope.get();
     }
     return nullptr;
 }
 
-VCDSignal* VCDFile::getSignal(const VCDSignalHash& hash) const {
+VCDSignal* VCDFile::getSignal(const std::string& hash) const {
     for (const auto& signal : signals_ | std::views::values) {
         if (signal->hash == hash) {
             return signal.get();
@@ -50,83 +50,13 @@ uint64_t VCDFile::getTimestamp(const size_t index) const {
     return times_[index];
 }
 
-void VCDFile::addSignalValue(const VCDTime delta, const VCDValue& val, const VCDSignalHash& hash) {
-    if (const auto& it = signals_.find(hash); it == signals_.end()) {
-        std::ostringstream msg;
-        msg << "Unable to find the signal hash \'" << hash << "\'";
-        throw std::runtime_error(msg.str());
-    }
+const std::vector<uint64_t>& VCDFile::getTimestamps() const { return times_; }
 
-    const auto& signal = signals_.at(hash).get();
-    signal->timestamps.push_back(delta);
-    switch (val.type) {
-        case VCDValueType::VCD_SCALAR:
-            signal->bits.push_back(val.scalar);
-            break;
-        case VCDValueType::VCD_VECTOR: {
-            auto* bits = new VCDBit[val.vector_size];
-            std::copy_n(val.vector, val.vector_size, bits);
-            signal->vectors.push_back(bits);
-            break;
-        }
-        case VCDValueType::VCD_REAL:
-            signal->reals.push_back(val.real);
-            break;
-        default:
-            break;
-    }
-}
-
-VCDValue VCDFile::getSignalValue(const VCDSignalHash& hash, const VCDTime time) {
-    const auto it = signals_.find(hash);
-    if (it == signals_.end()) {
-        std::ostringstream msg;
-        msg << "Unable to find the signal hash \'" << hash << "\'";
-        throw std::runtime_error(msg.str());
-    }
-    const auto& signal = it->second;
-
-    if (signal->timestamps.empty()) {
-        return {};
-    }
-
-    size_t index = 0;
-
-    for (const auto& timestamp : signal->timestamps) {
-        if (timestamp >= time) {
-            break;
-        }
-        index++;
-    }
-
-    if (!signal->bits.empty()) {
-        return VCDValue(signal->bits.at(index));
-    }
-    if (!signal->vectors.empty()) {
-        return VCDValue(signal->vectors.at(index), signal->size);
-    }
-    if (!signal->reals.empty()) {
-        return VCDValue(signal->reals.at(index));
-    }
-
-    return {};
-}
-
-std::vector<VCDTime>& VCDFile::getSignalTimestamps(const VCDSignalHash& hash) {
-    const auto it = signals_.find(hash);
-    if (it == signals_.end()) {
-        std::ostringstream msg;
-        msg << "Unable to find the signal hash \'" << hash << "\'";
-        throw std::runtime_error(msg.str());
-    }
-    const auto& signal = it->second;
-    return signal->timestamps;
-}
-
-bool VCDFile::exists(const VCDSignalHash& hash) const {
+bool VCDFile::exists(const std::string& hash) const {
     if (const auto it = signals_.find(hash); it == signals_.end()) {
         std::ostringstream msg;
         msg << "Unable to find the signal hash \'" << hash << "\'";
+        std::cerr << msg.str() << std::endl;
         return false;
     }
     return true;

@@ -42,16 +42,17 @@ std::string vcdTimeUnit2String(const VCDTimeUnit unit) {
 
 char vcdBit2Char(const VCDBit bit) {
     switch (bit) {
-        case VCDBit::VCD_0  :   return '0';
-        case VCDBit::VCD_1  :   return '1';
-        case VCDBit::VCD_Z  :   return 'Z';
-        case VCDBit::VCD_X  :   return 'X';
-        case VCDBit::VCD_U  :   return 'U';
-        case VCDBit::VCD_W  :   return 'W';
-        case VCDBit::VCD_L  :   return 'L';
-        case VCDBit::VCD_H  :   return 'H';
-        case VCDBit::VCD_DC :   return '-';
-        default:                return '?';
+        case VCDBit::VCD_0      :   return '0';
+        case VCDBit::VCD_1      :   return '1';
+        case VCDBit::VCD_Z      :   return 'Z';
+        case VCDBit::VCD_X      :   return 'X';
+        case VCDBit::VCD_U      :   return 'U';
+        case VCDBit::VCD_W      :   return 'W';
+        case VCDBit::VCD_L      :   return 'L';
+        case VCDBit::VCD_H      :   return 'H';
+        case VCDBit::VCD_DC     :   return '-';
+        case VCDBit::VCD_UNK    :   return '?';
+        default:                    return '?';
     }
 }
 
@@ -72,7 +73,7 @@ VCDBit char2VCDBit(const char bit) {
         case 'h':   return VCDBit::VCD_H;
         case 'H':   return VCDBit::VCD_H;
         case '-':   return VCDBit::VCD_DC;
-        default:    return VCDBit::VCD_X;
+        default:    return VCDBit::VCD_UNK;
     }
 }
 
@@ -87,6 +88,7 @@ const char* bitColor(const VCDBit bit) {
         case VCDBit::VCD_L  :   return color::BG_GREEN;
         case VCDBit::VCD_H  :   return color::BG_GREEN;
         case VCDBit::VCD_DC :   return color::WHITE;
+        case VCDBit::VCD_UNK:   return color::RED;
         default:                return color::RED;
     }
 }

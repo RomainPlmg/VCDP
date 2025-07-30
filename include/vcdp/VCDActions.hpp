@@ -9,7 +9,7 @@
 namespace VCDP_NAMESPACE {
 
 struct VCDScopeBuilder {
-    VCDScopeName name;
+    std::string name;
     VCDScopeType type = VCDScopeType::VCD_SCOPE_UNKNOWN;
 
     [[nodiscard]] bool IsComplete() const { return !name.empty() && type != VCDScopeType::VCD_SCOPE_UNKNOWN; }
@@ -32,9 +32,9 @@ struct VCDScopeBuilder {
 };
 
 struct VCDSignalBuilder {
-    VCDSignalHash hash;
-    VCDSignalReference reference;
-    VCDSignalSize size = 0;
+    std::string hash;
+    std::string reference;
+    uint32_t size = 0;
     VCDVarType type = VCDVarType::VCD_VAR_UNKNOWN;
     int rindex = -1;
     int lindex = -1;

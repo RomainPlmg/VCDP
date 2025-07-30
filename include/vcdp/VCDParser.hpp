@@ -47,6 +47,7 @@ class VCDParser {
     VCDFile* file_ = nullptr;
 
     static size_t findNextLine(const std::string& chunk, size_t start);
-    void parseValueChangeLine(const std::string& line, VCDTime& current_time) const;
+    void parseValueChangeLine(const std::string& line) const;
 };
+
 }  // namespace VCDP_NAMESPACE

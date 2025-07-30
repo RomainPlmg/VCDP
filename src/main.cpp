@@ -38,22 +38,19 @@ int main(const int argc, char const* argv[]) {
         return 1;
     }
 
+    vcdp::VCDParser parser;
     vcdp::VCDFile trace;
-    std::ifstream stream(file_path);
+
+    parser.parse(file_path, &trace);
+
+    if (program["--verbose"] == true) {
+        for (const auto& msg : parser.GetResult().errors) {
+            std::cerr << vcdp::color::RED << msg << vcdp::color::RESET << std::endl;
+        }
+    }
 
     if (program.is_used("--tree")) {
         PrintSectionBanner("VCD SST");
-
-        stream.clear();
-        stream.seekg(0);
-        vcdp::VCDParser parser;
-        parser.parseHeader(stream, &trace, file_path);
-
-        if (program["--verbose"] == true) {
-            for (const auto& msg : parser.GetResult().errors) {
-                std::cerr << vcdp::color::RED << msg << vcdp::color::RESET << std::endl;
-            }
-        }
 
         std::vector<vcdp::VCDScope*> top_scopes;
         for (auto& scope : trace.getScopes()) {
@@ -71,11 +68,6 @@ int main(const int argc, char const* argv[]) {
     if (program.is_used("--stats")) {
         PrintSectionBanner("VCD Stats");
 
-        stream.clear();
-        stream.seekg(0);
-        vcdp::VCDParser parser;
-        parser.parseHeader(stream, &trace, file_path);
-
         if (program["--verbose"] == true) {
             for (const auto& msg : parser.GetResult().errors) {
                 std::cerr << vcdp::color::RED << msg << vcdp::color::RESET << std::endl;
@@ -92,43 +84,9 @@ int main(const int argc, char const* argv[]) {
 
     if (program.is_used("--symbol")) {
         const auto symbol = program.get<std::string>("--symbol");
-        stream.clear();
-        stream.seekg(0);
-        vcdp::VCDParser parser;
-        parser.parse(file_path, &trace);
 
-        if (program["--verbose"] == true) {
-            for (const auto& msg : parser.GetResult().errors) {
-                std::cerr << vcdp::color::RED << msg << vcdp::color::RESET << std::endl;
-            }
-        }
-
-        const auto& signal = trace.getSignal(symbol);
-
-        try {
-            if (signal == nullptr) {
-                const std::string msg = "Signal hash \'" + symbol + "\' doesn't exists.";
-                throw std::runtime_error(msg);
-            }
-
-            // Print banner
-            std::string banner = "VCD Chrono --> " + signal->reference;
-            if (signal->lindex > -1)
-                banner += "[" + std::to_string(signal->lindex) + ":" + std::to_string(signal->rindex) + "]";
-            else if (signal->rindex > -1)
-                banner += "[" + std::to_string(signal->rindex) + "]";
-            PrintSectionBanner(banner);
-
-            // Get timestamps
-            const auto& timestamps = trace.getSignalTimestamps(symbol);
-
-            for (size_t i = 0; i < timestamps.size(); i++) {
-                vcdp::VCDValue value = trace.getSignalValue(symbol, timestamps[i]);
-                std::cout << "# " << timestamps[i] << " " << vcdp::color::YELLOW << vcdp::utils::vcdTimeUnit2String(trace.time_units)
-                          << vcdp::color::RESET << " -> " << value << std::endl;
-            }
-        } catch (std::exception& e) {
-            std::cerr << vcdp::color::RED << "Error: " << e.what() << vcdp::color::RESET << std::endl;
+        for (const auto& timestamp : trace.getTimestamps()) {
+            std::cout << timestamp << std::endl;
         }
     }
 
