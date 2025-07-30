@@ -1,7 +1,7 @@
 #pragma once
 
+#include <map>
 #include <memory>
-#include <unordered_map>
 
 #include "Config.hpp"
 #include "VCDTypes.hpp"
@@ -70,7 +70,7 @@ class VCDFile {
     [[nodiscard]] const std::vector<std::unique_ptr<VCDScope>>& getScopes() const { return scopes_; }
 
     /// @brief Return a flattened vector of all signals in the file.
-    [[nodiscard]] const std::unordered_map<VCDSignalHash, std::unique_ptr<VCDSignal>>& getSignals() const { return signals_; }
+    [[nodiscard]] const std::map<VCDSignalHash, std::unique_ptr<VCDSignal>>& getSignals() const { return signals_; }
 
     /// @brief Check if hash exists in value map
     [[nodiscard]] bool exists(const VCDSignalHash& hash) const;
@@ -91,8 +91,7 @@ class VCDFile {
     VCDScope* current_scope = nullptr;
 
    private:
-    std::unordered_map<VCDSignalHash, std::unique_ptr<VCDSignal>> signals_;
+    std::map<VCDSignalHash, std::unique_ptr<VCDSignal>> signals_;
     std::vector<std::unique_ptr<VCDScope>> scopes_;
 };
-
 }  // namespace VCDP_NAMESPACE

@@ -5,8 +5,8 @@
 #include "Config.hpp"
 #include "VCDFile.hpp"
 
-namespace
-VCDP_NAMESPACE {
+namespace VCDP_NAMESPACE {
+
 struct VCDParseResult {
     bool success = true;
     std::vector<std::string> errors;
@@ -35,18 +35,18 @@ struct VCDParseResult {
 };
 
 class VCDParser {
-public:
+   public:
     void parseHeader(std::ifstream& stream, VCDFile* file, const std::string& file_path);
     void parseValueChange(std::ifstream& stream, VCDFile* file, const std::string& file_path);
     void parse(const std::string& file_path, VCDFile* file);
 
     [[nodiscard]] const VCDParseResult& GetResult() const { return result_; }
 
-private:
+   private:
     VCDParseResult result_;
     VCDFile* file_ = nullptr;
 
     static size_t findNextLine(const std::string& chunk, size_t start);
     void parseValueChangeLine(const std::string& line, VCDTime& current_time);
 };
-} // namespace VCDP_NAMESPACE
+}  // namespace VCDP_NAMESPACE

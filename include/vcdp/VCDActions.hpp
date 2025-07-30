@@ -3,10 +3,8 @@
 #include <string>
 
 #include "Config.hpp"
-#include "Utils.hpp"
 #include "VCDFile.hpp"
 #include "VCDLexical.hpp"
-#include "VCDValue.hpp"
 
 namespace VCDP_NAMESPACE {
 
@@ -312,5 +310,4 @@ struct action<lexical::command_enddefinitions> {
         }
     }
 };
-
 }  // namespace VCDP_NAMESPACE
