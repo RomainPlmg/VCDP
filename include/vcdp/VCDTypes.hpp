@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Config.hpp"
+#include "VListManager.hpp"
 
 /**
  * @file VCDTypes.hpp
@@ -113,6 +114,9 @@ struct VCDSignal {
     std::vector<VCDReal> reals = {};
 
     std::vector<VCDTime> timestamps;
+
+    VListManager data;
+    VListManager time_indices;
 
     ~VCDSignal() {
         for (const auto* ptr : vectors) {

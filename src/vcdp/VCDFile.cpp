@@ -27,6 +27,8 @@ void VCDFile::addSignal(std::unique_ptr<VCDSignal> signal) {
     current_scope->signals.push_back(p_signal);
 }
 
+void VCDFile::addTimestamp(const uint64_t timestamp) { times_.push_back(timestamp); }
+
 VCDScope* VCDFile::getScope(const VCDScopeName& name) const {
     for (const auto& scope : scopes_) {
         if (scope->name == name) return scope.get();
@@ -41,6 +43,11 @@ VCDSignal* VCDFile::getSignal(const VCDSignalHash& hash) const {
         }
     }
     return nullptr;
+}
+
+uint64_t VCDFile::getTimestamp(const size_t index) const {
+    if (index >= times_.size()) return 0;
+    return times_[index];
 }
 
 void VCDFile::addSignalValue(const VCDTime delta, const VCDValue& val, const VCDSignalHash& hash) {

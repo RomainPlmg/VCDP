@@ -29,6 +29,12 @@ class VCDFile {
     void addSignal(std::unique_ptr<VCDSignal> signal);
 
     /**
+     * @brief Add a new timestamp to the VCD file.
+     * @param timestamp The timestamp value (eg. 123000).
+     */
+    void addTimestamp(uint64_t timestamp);
+
+    /**
      * @brief Add a new signal value on the last registered timestamp
      * @param delta The time between the last time and the new one
      * @param val The value of the signal
@@ -49,6 +55,8 @@ class VCDFile {
      * @return A pointer to the signal, or nullptr if signal not found.
      */
     [[nodiscard]] VCDSignal* getSignal(const VCDSignalHash& hash) const;
+
+    [[nodiscard]] uint64_t getTimestamp(const size_t index) const;
 
     /**
      * @brief Get the value of a particular signal at a specified time.
@@ -93,5 +101,6 @@ class VCDFile {
    private:
     std::map<VCDSignalHash, std::unique_ptr<VCDSignal>> signals_;
     std::vector<std::unique_ptr<VCDScope>> scopes_;
+    std::vector<VCDTime> times_;
 };
 }  // namespace VCDP_NAMESPACE
